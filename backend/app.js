@@ -15,7 +15,12 @@ app.use(morgan('dev'));
 const morgan = require('morgan');
 //app.use(bodyParser.json());
 
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL, // Your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    credentials: true, // Allow cookies and credentials
+}));
 
 const mongoUrl=process.env.MONGO_URL
 
