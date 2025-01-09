@@ -43,7 +43,7 @@ const EditLeaveApplication = () => {
     const fetchLeaveDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5001/view-leave/${leaveId}`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/view-leave/${leaveId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const { data } = response.data;
@@ -69,7 +69,7 @@ const EditLeaveApplication = () => {
     const leaveData = { leaveType, leaveDuration, permissionType, halfDayOption, startDate, endDate, reason };
 
     try {
-      const response = await axios.put(`http://localhost:5001/edit-leave/${leaveId}`, leaveData, {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/edit-leave/${leaveId}`, leaveData, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       console.log(response.data);
