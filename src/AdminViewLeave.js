@@ -31,8 +31,13 @@ function AdminViewLeave() {
 
   useEffect(() => {
     const fetchLeaveHistory = async () => {
+      
+      // Check the value
+      
+
       try {
-        const response = await axios.get('http://localhost:5001/leave-history', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/leave-history`, {
+          
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setLeaveHistory(response.data);
@@ -75,7 +80,7 @@ function AdminViewLeave() {
   const handleApprove = async (id) => {
     try {
       const response = await axios.put(
-        `http://localhost:5001/approve-leave/${id}`,
+        `${process.env.REACT_APP_API_URL}/approve-leave/${id}`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -100,7 +105,7 @@ function AdminViewLeave() {
   const handleReject = async (id) => {
     try {
       const response = await axios.put(
-        `http://localhost:5001/reject-leave/${id}`,
+        `${process.env.REACT_APP_API_URL}/reject-leave/${id}`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },

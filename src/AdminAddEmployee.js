@@ -31,7 +31,7 @@ function AddEmployee() {
 
     try {
       const response = await axios.post(
-        'http://localhost:5001/add-basic',employee,
+        '${apiUrl}/add-basic',employee,
        // { employeeid, fullname },
         {
           headers: {

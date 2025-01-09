@@ -28,7 +28,7 @@ function Profile() {
     }
 
     // Fetch user profile data from backend
-    axios.get('http://localhost:5001/admin-profile', {
+    axios.get(`${process.env.REACT_APP_API_URL}/admin-profile`, {
       headers: {
         'Authorization': `Bearer ${token}` // Send token to backend to authenticate
       }
@@ -65,7 +65,7 @@ function Profile() {
     };
 
     // Send the updated profile to the backend
-    axios.put('http://localhost:5001/profile', updatedData, {
+    axios.put(`${process.env.REACT_APP_API_URL}/profile`, updatedData, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'

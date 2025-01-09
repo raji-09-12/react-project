@@ -30,7 +30,7 @@ function Dashboard() {
     }
 
     axios
-      .get('http://localhost:5001/profile', {
+      .get(`${process.env.REACT_APP_API_URL}/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => setUserData(response.data))
@@ -40,12 +40,12 @@ function Dashboard() {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const employeeResponse = await axios.get('http://localhost:5001/employees', {
+        const employeeResponse = await axios.get(`${process.env.REACT_APP_API_URL}/employees`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setEmployees(employeeResponse.data);
 
-        const leaveResponse = await axios.get('http://localhost:5001/leave-history/:id', {
+        const leaveResponse = await axios.get(`${process.env.REACT_APP_API_URL}/leave-history/:id`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setLeaveHistory(leaveResponse.data.leaveHistory);
