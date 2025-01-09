@@ -68,7 +68,7 @@ function Login() {
                     
 
                     <h2 className="mb-6 text-2xl font-bold text-gray-800">Sign In</h2>
-                    <p> hello</p>
+                    
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {error && <div className="error-message mb-4 text-sm text-red-500 text-center">{error}</div>}
