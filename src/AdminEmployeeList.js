@@ -67,7 +67,7 @@ function AdminEmployeeList() {
       
         <Sidebar handleLogout={handleLogout} />
      
-     <div className="flex-1 p-6">
+     <div className="flex-1 ml-64 p-6">
       <div className="w-full bg-white p-6 shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold text-center mb-4">Employee Details</h2>
       <div className="text-right mb-4">
@@ -85,7 +85,7 @@ function AdminEmployeeList() {
 
       <table>
         <thead>
-          <tr className="bg-gray-200">
+          <tr className="w-full border-collapse border border-gray-400">
             <th className="border border-gray-400 px-4 py-2">Employee ID</th>
             <th className="border border-gray-400 px-4 py-2">Full Name</th>
             <th className="border border-gray-400 px-4 py-2">Mobile NO</th>
