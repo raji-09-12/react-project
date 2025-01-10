@@ -11,9 +11,15 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const app = express();
 app.use(express.json());
+//app.use(morgan('dev'));
+//const morgan = require('morgan');
 //app.use(bodyParser.json());
 
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL, // Frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+}));
 
 const mongoUrl=process.env.MONGO_URL
 
