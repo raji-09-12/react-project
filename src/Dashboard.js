@@ -86,7 +86,7 @@ function Dashboard() {
         {/* Display total leave and total permission */}
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
           <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
-            <h3 className="text-xl font-semibold text-gray-800">Total Leave</h3>
+            <h3 className="text-xl font-semibold text-gray-800">Total Leave Request</h3>
             <p className="text-2xl font-bold text-gray-600">{totalLeave}</p>
           </div>
           <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
@@ -94,6 +94,7 @@ function Dashboard() {
             <p className="text-2xl font-bold text-gray-600">{totalPermission}</p>
           </div>
         </div>
+        
 
         </div>
       </div>

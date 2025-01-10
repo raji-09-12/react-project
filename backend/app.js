@@ -16,7 +16,8 @@ app.use(express.json());
 //app.use(bodyParser.json());
 
 app.use(cors({
-    origin: 'https://react-project-sepia-tau.vercel.app', // Frontend URL
+    origin: 'https://react-project-sepia-tau.vercel.app',
+    //origin: 'http://localhost:3000',// Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 }));
@@ -625,6 +626,7 @@ app.get('/leave-history/:id', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 // POST route for adding an employee with only employeeid and fullname
 app.post('/add-basic', async (req, res) => {

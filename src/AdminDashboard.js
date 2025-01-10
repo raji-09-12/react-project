@@ -63,6 +63,14 @@ function Dashboard() {
 
     fetchDetails();
   }, []);
+  
+  const totalLeaveDays = leaveHistory.reduce((total, leave) => {
+    if (leave.leaveType?.toLowerCase() === 'leave') {
+      return total + (leave.totalDays || 0); // Add totalDays for "Leave" entries
+    }
+    return total;
+  }, 0);
+
   const totalLeaveCount = leaveHistory?.filter(
     (leave) => leave.leaveType?.toLowerCase() === 'leave'
   ).length || 0;
@@ -85,8 +93,12 @@ function Dashboard() {
             <p className="text-2xl font-bold text-gray-600">{employees.length}</p>
           </div>
           <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
-            <h3 className="text-xl font-semibold text-gray-800">Total Leave</h3>
+            <h3 className="text-xl font-semibold text-gray-800">Total Leave Requst</h3>
             <p className="text-2xl font-bold text-gray-600">{totalLeaveCount}</p>
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
+            <h3 className="text-xl font-semibold text-gray-800">Total Leave Days</h3>
+            <p className="text-2xl font-bold text-gray-600">{totalLeaveDays}</p>
           </div>
           <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
             <h3 className="text-xl font-semibold text-gray-800">Total Permission</h3>

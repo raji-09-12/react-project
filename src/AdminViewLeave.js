@@ -69,6 +69,13 @@ function AdminViewLeave() {
 
   const displayLeaveHistory = isDefaultDateRange() ? leaveHistory : filteredLeaveHistory;
 
+  const totalLeaveDays = leaveHistory.reduce((total, leave) => {
+    if (leave.leaveType?.toLowerCase() === 'leave') {
+      return total + (leave.totalDays || 0); // Add totalDays for "Leave" entries
+    }
+    return total;
+  }, 0);
+
   const totalLeaveCount = leaveHistory.filter((leave) => 
     leave.leaveType?.toLowerCase() === 'leave'
   ).length;
@@ -131,9 +138,9 @@ function AdminViewLeave() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex ">
       <Sidebar handleLogout={handleLogout} />
-      <div className="flex-1 p-6">
+      <div className="main-content flex-1 ml-64 p-6">
         <div className="w-full bg-white p-6 shadow-lg rounded-lg">
           <h2 className="text-2xl font-bold text-center mb-4">Employee Leave History</h2>
           <DateRangePicker
@@ -157,8 +164,9 @@ function AdminViewLeave() {
             Show All Leave
           </button>
           <div className="mb-6 text-lg font-semibold text-gray-700">
-            <p>Total Leaves: {totalLeaveCount}</p>
+            <p>Total Leave Request: {totalLeaveCount}</p>
             <p>Total Permissions: {totalPermissionCount}</p>
+            <p>Total Leave Days: {totalLeaveDays}</p>
             
           </div>
           <table>
