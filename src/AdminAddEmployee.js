@@ -31,7 +31,7 @@ function AddEmployee() {
 
     try {
       const response = await axios.post(
-        '${apiUrl}/add-basic',employee,
+        `${process.env.REACT_APP_API_URL}add-basic`,employee,
        // { employeeid, fullname },
         {
           headers: {
