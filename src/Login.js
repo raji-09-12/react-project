@@ -11,11 +11,13 @@ function Login() {
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [error, setError] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false); // State for password visibility
+    const [isSubmitting, setIsSubmitting] = useState(false);
     //const navigate = useNavigate();
 
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
 
         try {
             const response = await axios.post(`${process.env.REACT_APP_API_URL}login`, { 
@@ -38,6 +40,8 @@ function Login() {
            // window.location.href = '/dashboard';
         } catch (error) {
             setError(error.response?.data.message || 'Login failed');
+        }finally {
+            setIsSubmitting(false);
         }
     };
     const togglePasswordVisibility = () => {
@@ -126,9 +130,14 @@ function Login() {
                         {/* Login button */}
                         <button 
                             type="submit" 
-                            className="w-full py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            disabled={isSubmitting || !termsAccepted}
+                            className={`w-full py-2 text-white rounded-lg ${
+                                isSubmitting || !termsAccepted
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-blue-500 hover:bg-blue-600'
+                            }`}
                         >
-                            Login
+                            {isSubmitting ? 'Logging in...' : 'Login'}
                         </button>
                     </form>
 

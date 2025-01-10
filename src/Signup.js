@@ -152,7 +152,7 @@ function Signup() {
             <div className="input-group mb-4">
               <label htmlFor="password" className="block mb-2 text-left text-gray-700">Password</label>
               <input
-                type="password"
+                type="text"
                 id="password"
                 className="w-full p-1 text-base border-2 border-gray-300 rounded-md"
                 value={password}
