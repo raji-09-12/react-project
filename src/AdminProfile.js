@@ -28,7 +28,7 @@ function Profile() {
     }
 
     // Fetch user profile data from backend
-    axios.get(`${process.env.REACT_APP_API_URL}/admin-profile`, {
+    axios.get(`${process.env.REACT_APP_API_URL}admin-profile`, {
       headers: {
         'Authorization': `Bearer ${token}` // Send token to backend to authenticate
       }
