@@ -30,7 +30,7 @@ function Dashboard() {
     }
 
     // Fetch user profile data from backend
-    axios.get(`${process.env.REACT_APP_API_URL}/profile`, {
+    axios.get(`${process.env.REACT_APP_API_URL}profile`, {
       headers: {
         'Authorization': `Bearer ${token}` // Send token to backend to authenticate
       }
@@ -51,7 +51,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/dashboard-stats`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}dashboard-stats`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
        
