@@ -16,7 +16,7 @@ app.use(express.json());
 //app.use(bodyParser.json());
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL, // Frontend URL
+    origin: 'https://react-project-sepia-tau.vercel.app/', // Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 }));
