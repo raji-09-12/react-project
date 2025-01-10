@@ -17,6 +17,7 @@ app.use(cors({
     origin: process.env.FRONTEND_URL, // Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    credentials: true,
 }));
 
 const mongoUrl=process.env.MONGO_URL
