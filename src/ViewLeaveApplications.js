@@ -35,7 +35,7 @@ const ViewLeaveApplications = () => {
                 return;
             }
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/view-leaves`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}view-leaves`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -81,7 +81,7 @@ const ViewLeaveApplications = () => {
         }
 
         try {
-            await axios.delete(`${process.env.REACT_APP_API_URL}/delete-leave/${leaveId}`, {
+            await axios.delete(`${process.env.REACT_APP_API_URL}delete-leave/${leaveId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setLeaves(leaves.filter((leave) => leave._id !== leaveId));
