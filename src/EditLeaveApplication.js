@@ -43,7 +43,7 @@ const EditLeaveApplication = () => {
     const fetchLeaveDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/view-leave/${leaveId}`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}view-leave/${leaveId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const { data } = response.data;
