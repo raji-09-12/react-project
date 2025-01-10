@@ -21,7 +21,7 @@ function AdminEmployeeList() {
   useEffect(() => {
     const fetchEmployeeDetails = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/employees`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}employees`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setEmployees(response.data);
@@ -42,7 +42,7 @@ function AdminEmployeeList() {
     const confirmDelete = window.confirm('Are you sure you want to delete this employee?');
     if (confirmDelete) {
       try {
-        const response = await axios.delete(`${process.env.REACT_APP_API_URL}/employees/${employeeId}`, {
+        const response = await axios.delete(`${process.env.REACT_APP_API_URL}employees/${employeeId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         if (response.status === 200) {

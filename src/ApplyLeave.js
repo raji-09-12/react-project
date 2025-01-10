@@ -30,7 +30,7 @@ function LeaveApplication() {
       }
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/view-leaves`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}view-leaves`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -79,7 +79,7 @@ function LeaveApplication() {
     const leaveData = { leaveType, permissionType, halfDayOption, startDate, endDate, reason, leaveDuration };
     console.log(token)
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/apply-leave`, leaveData, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}apply-leave`, leaveData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

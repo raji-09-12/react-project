@@ -43,7 +43,7 @@ function Signup() {
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/register`, user, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}register`, user, {
         headers: { 'Content-Type': 'application/json' },
       });
 

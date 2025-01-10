@@ -36,7 +36,7 @@ function AdminViewLeave() {
       
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/leave-history`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}leave-history`, {
           
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
@@ -80,7 +80,7 @@ function AdminViewLeave() {
   const handleApprove = async (id) => {
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/approve-leave/${id}`,
+        `${process.env.REACT_APP_API_URL}approve-leave/${id}`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -105,7 +105,7 @@ function AdminViewLeave() {
   const handleReject = async (id) => {
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/reject-leave/${id}`,
+        `${process.env.REACT_APP_API_URL}reject-leave/${id}`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -154,7 +154,7 @@ function AdminViewLeave() {
             }])}
             className="bg-gray-500 text-white px-4 py-2 rounded mt-4"
           >
-            Show All Leaves
+            Show All Leave
           </button>
           <div className="mb-6 text-lg font-semibold text-gray-700">
             <p>Total Leaves: {totalLeaveCount}</p>
