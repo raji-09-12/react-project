@@ -26,6 +26,15 @@ const ViewLeaveApplications = () => {
         localStorage.removeItem('token');
         navigate('/login');
     };
+    
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        console.log('Token:', token);
+        if (!token) {
+          navigate('/login' );
+        }
+      }, [navigate]);
+    
 
     useEffect(() => {
         const fetchLeaves = async () => {

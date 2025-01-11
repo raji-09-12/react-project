@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const Sidebar = ({ handleLogout }) => {
   return (
     <div className="sidebar w-64 bg-gray-800 text-white p-6 fixed h-full left-0 top-0 ">
-      <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
+      <h2 className="text-xl font-bold mb-6">Admin Panel</h2>
       <a href = "/admin-dashboard"> </a>
       <ul>
         <li className="mb-4">

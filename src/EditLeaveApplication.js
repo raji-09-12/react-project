@@ -41,6 +41,12 @@ const EditLeaveApplication = () => {
 
   useEffect(() => {
     const fetchLeaveDetails = async () => {
+      const token = localStorage.getItem('token');
+
+    if (!token) {
+      window.location.href = '/login'; // Redirect to login page if no token is found
+      return;
+    }
       try {
         setLoading(true);
         const response = await axios.get(`${process.env.REACT_APP_API_URL}view-leave/${leaveId}`, {

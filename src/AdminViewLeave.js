@@ -10,7 +10,7 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 
 function AdminViewLeave() {
   const [leaveHistory, setLeaveHistory] = useState([]);
-  
+  const [filteredLeaveHistory, setFilteredLeaveHistory] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState([
@@ -20,7 +20,9 @@ function AdminViewLeave() {
       key: 'selection',
     },
   ]);
-  
+  const [isFiltered, setIsFiltered] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+
   
   const navigate = useNavigate();
   
@@ -31,6 +33,12 @@ function AdminViewLeave() {
 
   useEffect(() => {
     const fetchLeaveHistory = async () => {
+      const token = localStorage.getItem('token');
+
+    if (!token) {
+      window.location.href = '/login'; // Redirect to login page if no token is found
+      return;
+    }
       
       // Check the value
       
@@ -51,23 +59,54 @@ function AdminViewLeave() {
     fetchLeaveHistory();
   }, []);
   
-  const isDefaultDateRange = () => {
-    const startDate = dateRange[0].startDate.toDateString();
-    const endDate = dateRange[0].endDate.toDateString();
-    const defaultStartDate = new Date().toDateString();
-    const defaultEndDate = addDays(new Date(), 7).toDateString();
-
-    return startDate === defaultStartDate && endDate === defaultEndDate;
+  const handleShowAllLeave = () => {
+    setFilteredLeaveHistory([]); // Clear the filtered history
+    setIsFiltered(false); // Reset the filter flag
+    setDateRange([{
+      startDate: new Date(),
+      endDate: addDays(new Date(), 7),
+      key: 'selection',
+    }]); // Reset the date range to the default range
   };
 
-  const filteredLeaveHistory = leaveHistory.filter((leave) => {
-    const leaveDate = new Date(leave.startDate);
-    const isWithinRange =
-      leaveDate >= dateRange[0].startDate && leaveDate <= dateRange[0].endDate;
-    return isWithinRange;
-  });
+  const handleTakeReport = () => {
+    setShowReport(true); // Show the report when button is clicked
+  };
+  
+  const groupedLeaveHistory = filteredLeaveHistory.reduce((acc, leave) => {
+    const employeeId = leave.userId.employeeid;
+    if (!acc[employeeId]) {
+      acc[employeeId] = {
+        employeeId,
+        employeeName: leave.userId.fullname,
+        totalLeaveDays: 0,
+      };
+    }
+    if (leave.leaveType?.toLowerCase() === 'leave') {
+      acc[employeeId].totalLeaveDays += leave.totalDays || 0;
+    }
+    return acc;
+  }, {});
+  
+  const reportData = Object.values(groupedLeaveHistory); // Convert grouped object to array
+  
 
-  const displayLeaveHistory = isDefaultDateRange() ? leaveHistory : filteredLeaveHistory;
+
+  const normalizeDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const filteredLeaveHistoryData = leaveHistory.filter((leave) => {
+  const leaveDate = normalizeDate(new Date(leave.startDate));
+  const startDate = normalizeDate(dateRange[0].startDate);
+  const endDate = normalizeDate(dateRange[0].endDate);
+
+  return leaveDate >= startDate && leaveDate <= endDate;
+});
+
+const handleViewLeave = () => {
+  setFilteredLeaveHistory(filteredLeaveHistoryData);  // Update the filtered data
+  setIsFiltered(true);  // Set the filter state to true
+};
+const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
 
   const totalLeaveDays = leaveHistory.reduce((total, leave) => {
     if (leave.leaveType?.toLowerCase() === 'leave') {
@@ -152,17 +191,52 @@ function AdminViewLeave() {
             rangeColors={['#3f51b5']}
             locale={enUS}  // Pass the locale
           />
+          {/* View Leave Button */}
+          <button
+            onClick={handleViewLeave}
+            className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+          >
+            View Leave
+          </button>
           {/* Reset Filter Button */}
           <button
-            onClick={() => setDateRange([{
-              startDate: new Date(),
-              endDate: addDays(new Date(), 7),
-              key: 'selection',
-            }])}
+            onClick={handleShowAllLeave}
             className="bg-gray-500 text-white px-4 py-2 rounded mt-4"
           >
             Show All Leave
           </button>
+          <button
+          onClick={handleTakeReport}
+          className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+        >
+          Take Report
+        </button>
+
+
+          {showReport && (
+          <div className="w-full bg-white p-6 shadow-lg rounded-lg mt-6">
+            <h2 className="text-2xl font-bold text-center mb-4">Leave Report</h2>
+            <table>
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border border-gray-400 px-4 py-2">Employee ID</th>
+                  <th className="border border-gray-400 px-4 py-2">Employee Name</th>
+                  <th className="border border-gray-400 px-4 py-2">Total Leave Days</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportData.map((employee) => (
+                  <tr key={employee.employeeId}>
+                    <td className="border border-gray-400 px-4 py-2">{employee.employeeId}</td>
+                    <td className="border border-gray-400 px-4 py-2">{employee.employeeName}</td>
+                    <td className="border border-gray-400 px-4 py-2">{employee.totalLeaveDays}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
           <div className="mb-6 text-lg font-semibold text-gray-700">
             <p>Total Leave Request: {totalLeaveCount}</p>
             <p>Total Permissions: {totalPermissionCount}</p>

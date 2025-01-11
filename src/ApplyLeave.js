@@ -20,7 +20,14 @@ function LeaveApplication() {
     localStorage.removeItem('token');
     navigate('/login');
   };
-
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    console.log('Token:', token);
+    if (!token) {
+      navigate('/login', { replace: true });
+    }
+  }, [navigate]);
+  
   useEffect(() => {
     const fetchExistingLeaves = async () => {
       const token = localStorage.getItem('token');

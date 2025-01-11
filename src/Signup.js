@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Signup() {
   const [fullName, setFullName] = useState('');
@@ -12,7 +13,8 @@ function Signup() {
   const [address, setAddress] = useState('');
   const [error, setError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
-
+  const navigate = useNavigate();
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -46,6 +48,9 @@ function Signup() {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}register`, user, {
         headers: { 'Content-Type': 'application/json' },
       });
+      if (response.status === 201) {
+        navigate('/login'); // Redirect to employee list page after success
+      }
 
       alert('Registration successful!');
     } catch (error) {
@@ -125,15 +130,17 @@ function Signup() {
 
             <div className="input-group mb-4">
               <label htmlFor="gender" className="block mb-2 text-left text-gray-700">Gender</label>
-              <input
-                type="text"
+              <select
                 id="gender"
-                className="w-full p-1 text-base border-2 border-gray-300 rounded-md"
+                className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                placeholder="Enter your gender"
                 required
-              />
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
             </div>
 
             <div className="input-group mb-4">
