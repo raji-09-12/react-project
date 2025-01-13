@@ -17,7 +17,7 @@ app.use(express.json());
 
 app.use(cors({
     origin: 'https://react-project-sepia-tau.vercel.app',
-    //origin: 'http://localhost:3000',// Frontend URL
+   // origin: 'http://localhost:3000',// Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 }));

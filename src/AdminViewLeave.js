@@ -62,6 +62,7 @@ function AdminViewLeave() {
   const handleShowAllLeave = () => {
     setFilteredLeaveHistory([]); // Clear the filtered history
     setIsFiltered(false); // Reset the filter flag
+    setShowReport(false);
     setDateRange([{
       startDate: new Date(),
       endDate: addDays(new Date(), 7),
@@ -69,9 +70,6 @@ function AdminViewLeave() {
     }]); // Reset the date range to the default range
   };
 
-  const handleTakeReport = () => {
-    setShowReport(true); // Show the report when button is clicked
-  };
   
   const groupedLeaveHistory = filteredLeaveHistory.reduce((acc, leave) => {
     const employeeId = leave.userId.employeeid;
@@ -80,10 +78,13 @@ function AdminViewLeave() {
         employeeId,
         employeeName: leave.userId.fullname,
         totalLeaveDays: 0,
+        totalPermissions: 0,
       };
     }
     if (leave.leaveType?.toLowerCase() === 'leave') {
       acc[employeeId].totalLeaveDays += leave.totalDays || 0;
+    } else if (leave.leaveType?.toLowerCase() === 'permission') {
+      acc[employeeId].totalPermissions += leave.totalDays || 0;
     }
     return acc;
   }, {});
@@ -105,6 +106,7 @@ const filteredLeaveHistoryData = leaveHistory.filter((leave) => {
 const handleViewLeave = () => {
   setFilteredLeaveHistory(filteredLeaveHistoryData);  // Update the filtered data
   setIsFiltered(true);  // Set the filter state to true
+  setShowReport(true);
 };
 const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
 
@@ -176,6 +178,8 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
+  
+
   return (
     <div className="flex ">
       <Sidebar handleLogout={handleLogout} />
@@ -205,12 +209,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
           >
             Show All Leave
           </button>
-          <button
-          onClick={handleTakeReport}
-          className="bg-green-500 text-white px-4 py-2 rounded mt-4"
-        >
-          Take Report
-        </button>
+          
 
 
           {showReport && (
@@ -222,6 +221,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                   <th className="border border-gray-400 px-4 py-2">Employee ID</th>
                   <th className="border border-gray-400 px-4 py-2">Employee Name</th>
                   <th className="border border-gray-400 px-4 py-2">Total Leave Days</th>
+                  <th className="border border-gray-400 px-4 py-2">Total Permissions</th>
                 </tr>
               </thead>
               <tbody>
@@ -230,6 +230,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                     <td className="border border-gray-400 px-4 py-2">{employee.employeeId}</td>
                     <td className="border border-gray-400 px-4 py-2">{employee.employeeName}</td>
                     <td className="border border-gray-400 px-4 py-2">{employee.totalLeaveDays}</td>
+                    <td className="border border-gray-400 px-4 py-2">{employee.totalPermissions}</td>
                   </tr>
                 ))}
               </tbody>
@@ -249,6 +250,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                 <th className="border border-gray-400 px-4 py-2">Employee ID</th>
                 <th className="border border-gray-400 px-4 py-2">Employee Name</th>
                 <th className="border border-gray-400 px-4 py-2">Leave Type</th>
+                <th className="border border-gray-400 px-4 py-2">Reason</th>
                 <th className="border border-gray-400 px-4 py-2">Start Date</th>
                 <th className="border border-gray-400 px-4 py-2">End Date</th>
                 <th className="border border-gray-400 px-4 py-2">Total Leave & Permission</th>
@@ -262,6 +264,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                   <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeid}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.userId.fullname}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.leaveType}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.reason}</td>
                   <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
                   <td className="border border-gray-400 px-4 py-2">{new Date(leave.endDate).toLocaleDateString()}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>

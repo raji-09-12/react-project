@@ -12,7 +12,12 @@ function AddEmployee() {
     localStorage.removeItem('token');
     navigate('/login');
   };
+  const token = localStorage.getItem('token');
 
+    if (!token) {
+      window.location.href = '/login'; // Redirect to login page if no token is found
+      return;
+    }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

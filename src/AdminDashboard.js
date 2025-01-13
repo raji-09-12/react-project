@@ -63,6 +63,15 @@ function Dashboard() {
 
     fetchDetails();
   }, []);
+
+  const today = new Date().toISOString().split('T')[0];
+  const todayLeaveData = leaveHistory.filter((leave) => {
+    const startDate = new Date(leave.startDate); // Replace with actual start date key
+    const endDate = new Date(leave.endDate); // Replace with actual end date key
+    const todayDate = new Date(today);
+  
+    return todayDate >= startDate && todayDate <= endDate;
+  });
   
   const totalLeaveDays = leaveHistory.reduce((total, leave) => {
     if (leave.leaveType?.toLowerCase() === 'leave') {
@@ -78,9 +87,61 @@ function Dashboard() {
   const totalPermissionCount = leaveHistory?.filter(
     (leave) => leave.leaveType?.toLowerCase() === 'permission'
   ).length || 0;
+
+  const handleApprove = async (id) => {
+    try {
+      const response = await axios.put(
+        `${process.env.REACT_APP_API_URL}approve-leave/${id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        }
+      );
+
+      if (response.status === 200) {
+        setLeaveHistory((prevState) =>
+          prevState.map((leave) =>
+            leave._id === id ? { ...leave, status: 'approved' } : leave
+          )
+        );
+        alert('Leave approved successfully.');
+      } else {
+        alert('Failed to approve leave.');
+      }
+    } catch (error) {
+      alert('Error approving leave. Please try again.');
+    }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      const response = await axios.put(
+        `${process.env.REACT_APP_API_URL}reject-leave/${id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        }
+      );
+
+      if (response.status === 200) {
+        setLeaveHistory((prevState) =>
+          prevState.map((leave) =>
+            leave._id === id ? { ...leave, status: 'rejected' } : leave
+          )
+        );
+        alert('Leave rejected successfully.');
+      } else {
+        alert('Failed to reject leave.');
+      }
+    } catch (error) {
+      alert('Error rejecting leave. Please try again.');
+    }
+  };
   
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
+
+  const pendingLeaveData = leaveHistory.filter(leave => leave.status === 'Pending');
 
   return (
     <div className="flex min-h-screen">
@@ -117,6 +178,89 @@ function Dashboard() {
             <p className="text-2xl font-bold text-gray-600">{totals.totalRejected}</p>
           </div>
         </div>
+
+        {/* Today's Leave Data Table */}
+        <div className="mt-8 bg-white shadow-lg rounded-lg p-6">
+          <h3 className="text-xl font-semibold mb-4">Today's Leave Data</h3>
+          {todayLeaveData.length > 0 ? (
+            <table>
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border border-gray-400 px-4 py-2">Employee Name</th>
+                  <th className="border border-gray-400 px-4 py-2">Leave Type</th>
+                  <th className="border border-gray-400 px-4 py-2">Total Days</th>
+                  <th className="border border-gray-400 px-4 py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {todayLeaveData.map((leave) => (
+                  <tr key={leave._id}>
+                    <td className="border border-gray-400 px-4 py-2">{leave.userId.fullname}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.leaveType}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No leave data for today.</p>
+          )}
+        </div>
+
+        {/* Pending Leave Data Table */}
+        <div className="mt-8 bg-white shadow-lg rounded-lg p-6">
+          <h3 className="text-xl font-semibold mb-4">Pending Leave Requests</h3>
+          {pendingLeaveData.length > 0 ? (
+            <table>
+              <thead>
+                <tr className="bg-gray-200">
+                <th className="border border-gray-400 px-4 py-2">Employee ID</th>
+                  <th className="border border-gray-400 px-4 py-2">Employee Name</th>
+                  <th className="border border-gray-400 px-4 py-2">Leave Type</th>
+                  <th className="border border-gray-400 px-4 py-2">Reason</th>
+                  <th className="border border-gray-400 px-4 py-2">Start Date</th>
+                  <th className="border border-gray-400 px-4 py-2">End Date</th>
+                  <th className="border border-gray-400 px-4 py-2">Total Days</th>
+                  <th className="border border-gray-400 px-4 py-2">Status</th>
+                  <th className="border border-gray-400 px-4 py-2">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pendingLeaveData.map((leave) => (
+                  <tr key={leave._id}>
+                    <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeid}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.userId.fullname}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.leaveType}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.reason}</td>
+                    <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
+                    <td className="border border-gray-400 px-4 py-2">{new Date(leave.endDate).toLocaleDateString()}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.status}</td>
+                    <td className="border border-gray-400 px-4 py-2">
+                      <button
+                        onClick={() => handleApprove(leave._id)}
+                        className="bg-green-500 text-white px-4 py-2 rounded mr-2"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleReject(leave._id)}
+                        className="bg-red-500 text-white px-4 py-2 rounded"
+                      >
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No pending leave requests.</p>
+          )}
+        </div>
+
+
       </div>
     </div>
   );
