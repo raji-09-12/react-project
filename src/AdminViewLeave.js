@@ -95,13 +95,23 @@ function AdminViewLeave() {
 
   const normalizeDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-const filteredLeaveHistoryData = leaveHistory.filter((leave) => {
-  const leaveDate = normalizeDate(new Date(leave.startDate));
-  const startDate = normalizeDate(dateRange[0].startDate);
-  const endDate = normalizeDate(dateRange[0].endDate);
-
-  return leaveDate >= startDate && leaveDate <= endDate;
-});
+  const today = new Date();  // Get today's date
+  const todayNormalized = normalizeDate(today);  // Normalize today's date
+  
+  const filteredLeaveHistoryData = leaveHistory.filter((leave) => {
+    // Normalize the leave's start and end dates
+    const leaveStartDate = normalizeDate(new Date(leave.startDate));
+    const leaveEndDate = normalizeDate(new Date(leave.endDate || leave.startDate)); // Handle single-day leave
+  
+    // Check if today is within the leave date range (inclusive)
+    const isLeaveToday = todayNormalized >= leaveStartDate && todayNormalized <= leaveEndDate;
+  
+    // Check if the leave date falls within the selected date range
+    const isWithinRange = leaveStartDate <= dateRange[0].endDate && leaveEndDate >= dateRange[0].startDate;
+  
+    return isWithinRange && isLeaveToday && leave.status !== 'Rejected';  // Include only leaves that are in range and include today
+  });
+  
 
 const handleViewLeave = () => {
   setFilteredLeaveHistory(filteredLeaveHistoryData);  // Update the filtered data
@@ -110,20 +120,7 @@ const handleViewLeave = () => {
 };
 const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
 
-  const totalLeaveDays = leaveHistory.reduce((total, leave) => {
-    if (leave.leaveType?.toLowerCase() === 'leave') {
-      return total + (leave.totalDays || 0); // Add totalDays for "Leave" entries
-    }
-    return total;
-  }, 0);
-
-  const totalLeaveCount = leaveHistory.filter((leave) => 
-    leave.leaveType?.toLowerCase() === 'leave'
-  ).length;
-
-  const totalPermissionCount = leaveHistory.filter((leave) => 
-    leave.leaveType?.toLowerCase() === 'permission'
-  ).length;
+  
 
   const handleApprove = async (id) => {
     try {
@@ -212,7 +209,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
           
 
 
-          {showReport && (
+          {showReport &&  (
           <div className="w-full bg-white p-6 shadow-lg rounded-lg mt-6">
             <h2 className="text-2xl font-bold text-center mb-4">Leave Report</h2>
             <table>
@@ -238,12 +235,12 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
           </div>
         )}
 
-          <div className="mb-6 text-lg font-semibold text-gray-700">
+          {/*<div className="mb-6 text-lg font-semibold text-gray-700">
             <p>Total Leave Request: {totalLeaveCount}</p>
             <p>Total Permissions: {totalPermissionCount}</p>
             <p>Total Leave Days: {totalLeaveDays}</p>
             
-          </div>
+          </div> */}
           <table>
             <thead>
               <tr className="bg-gray-200">
@@ -263,10 +260,10 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                 <tr key={leave._id}>
                   <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeid}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.userId.fullname}</td>
-                  <td className="border border-gray-400 px-4 py-2">{leave.leaveType}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.leaveType}-{leave.permissionType} </td>
                   <td className="border border-gray-400 px-4 py-2">{leave.reason}</td>
                   <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
-                  <td className="border border-gray-400 px-4 py-2">{new Date(leave.endDate).toLocaleDateString()}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.status}</td>
                   <td className="border border-gray-400 px-4 py-2">

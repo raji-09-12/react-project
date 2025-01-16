@@ -130,6 +130,18 @@ function Profile() {
                 />
               </div>
 
+              {/* Date of Joining */}
+              <div className="input-group mb-4">
+                <label htmlFor="fullName" className="block mb-2 text-left text-gray-700">Date of Joining</label>
+                <input
+                  type="text"
+                  id="fullName"
+                  className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={userData.dateOfJoining ? new Date(userData.dateOfJoining).toISOString().slice(0, 10) : ''}
+                  readOnly
+                />
+              </div>
+
               {/* Mobile Number */}
               <div className="input-group mb-4">
                 <label htmlFor="fullName" className="block mb-2 text-left text-gray-700">Mobile Number</label>

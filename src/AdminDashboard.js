@@ -64,14 +64,26 @@ function Dashboard() {
     fetchDetails();
   }, []);
 
-  const today = new Date().toISOString().split('T')[0];
-  const todayLeaveData = leaveHistory.filter((leave) => {
-    const startDate = new Date(leave.startDate); // Replace with actual start date key
-    const endDate = new Date(leave.endDate); // Replace with actual end date key
-    const todayDate = new Date(today);
   
-    return todayDate >= startDate && todayDate <= endDate;
-  });
+
+  const normalizeDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const today = new Date();
+const todayNormalized = normalizeDate(today);  // Normalize today's date
+
+const todayLeaveData = leaveHistory.filter((leave) => {
+  // Normalize both start and end dates of the leave
+  const leaveStartDate = normalizeDate(new Date(leave.startDate));  // Normalize leave start date
+  const leaveEndDate = normalizeDate(new Date(leave.endDate || leave.startDate));  // Handle single-day leave
+
+  // Check if today's date is within the leave range and if it's a full-day leave
+  return (
+    todayNormalized >= leaveStartDate && 
+    todayNormalized <= leaveEndDate &&
+    leave.status !== 'Rejected'     
+  );
+});
+
   
   const totalLeaveDays = leaveHistory.reduce((total, leave) => {
     if (leave.leaveType?.toLowerCase() === 'leave') {
@@ -188,7 +200,7 @@ function Dashboard() {
                 <tr className="bg-gray-200">
                   <th className="border border-gray-400 px-4 py-2">Employee Name</th>
                   <th className="border border-gray-400 px-4 py-2">Leave Type</th>
-                  <th className="border border-gray-400 px-4 py-2">Total Days</th>
+                  
                   <th className="border border-gray-400 px-4 py-2">Status</th>
                 </tr>
               </thead>
@@ -196,8 +208,8 @@ function Dashboard() {
                 {todayLeaveData.map((leave) => (
                   <tr key={leave._id}>
                     <td className="border border-gray-400 px-4 py-2">{leave.userId.fullname}</td>
-                    <td className="border border-gray-400 px-4 py-2">{leave.leaveType}</td>
-                    <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.leaveType} - {leave.permissionType}</td>
+                    
                     <td className="border border-gray-400 px-4 py-2">{leave.status}</td>
                   </tr>
                 ))}
@@ -234,7 +246,7 @@ function Dashboard() {
                     <td className="border border-gray-400 px-4 py-2">{leave.leaveType}</td>
                     <td className="border border-gray-400 px-4 py-2">{leave.reason}</td>
                     <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
-                    <td className="border border-gray-400 px-4 py-2">{new Date(leave.endDate).toLocaleDateString()}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</td>
                     <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
                     <td className="border border-gray-400 px-4 py-2">{leave.status}</td>
                     <td className="border border-gray-400 px-4 py-2">

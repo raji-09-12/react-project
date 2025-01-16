@@ -63,6 +63,19 @@ function LeaveApplication() {
       setError('Unauthorized! Please log in again.');
       return;
     }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set today's time to midnight for accurate comparison
+
+  const selectedStartDate = new Date(startDate);
+  const selectedEndDate = endDate ? new Date(endDate) : null;
+
+  // Validation for past dates
+  if (selectedStartDate < today || (selectedEndDate && selectedEndDate < today)) {
+    setError('You cannot apply for leave or permission for dates before today.');
+    return;
+  }
+
     const isDateTaken = existingLeaves.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);
       const leaveEndDate = new Date(leave.endDate);
@@ -191,8 +204,8 @@ function LeaveApplication() {
                   required
                 >
                   <option value="">Select Morning or Evening</option>
-                  <option value="Morning">Morning</option>
-                  <option value="Evening">Evening</option>
+                  <option value="Morning">First</option>
+                  <option value="Evening">Last</option>
                 </select>
               </div>
             )}

@@ -72,13 +72,23 @@ const ViewLeaveApplications = () => {
         return startDate === defaultStartDate && endDate === defaultEndDate;
     };
 
-    const filteredLeaves = leaves.filter((leave) => {
-        const leaveStartDate = new Date(leave.startDate); // Convert leave's startDate to Date
-        const leaveEndDate = new Date(leave.endDate || leave.startDate); // Handle single-day leaves
-        const isWithinRange =
-            leaveStartDate <= dateRange[0].endDate && leaveEndDate >= dateRange[0].startDate; // Check overlap
-        return isWithinRange;
-    });
+    
+
+    const normalizeDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const filteredLeaves = leaves.filter((leave) => {
+  const leaveStartDate = normalizeDate(new Date(leave.startDate)); // Normalize the leave's startDate
+  const leaveEndDate = normalizeDate(new Date(leave.endDate || leave.startDate)); // Handle single-day leave
+  const startDate = normalizeDate(dateRange[0].startDate); // Normalize the range start date
+  const endDate = normalizeDate(dateRange[0].endDate); // Normalize the range end date
+
+  // Check if the leave falls within the date range (either start or end date overlaps)
+  const isWithinRange =
+    (leaveStartDate <= endDate && leaveEndDate >= startDate); // This checks if any part of the leave overlaps the range
+
+  return isWithinRange;
+});
+
 
     const displayLeaves = isDefaultDateRange() ? leaves : filteredLeaves;
 

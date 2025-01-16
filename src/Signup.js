@@ -11,6 +11,7 @@ function Signup() {
   const [email, setEmail] = useState('');
   const [gender, setGender] = useState('');
   const [address, setAddress] = useState('');
+  const [dateOfJoining, setDateOfJoining] = useState('');
   const [error, setError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ function Signup() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!fullName || !employeeId || !mobileNumber || !email || !gender || !address || !termsAccepted) {
+    if (!fullName || !employeeId || !mobileNumber || !email || !gender || !address || !termsAccepted || !dateOfJoining) {
       setError('Please fill in all fields and accept the terms.');
       return;
     }
@@ -42,6 +43,7 @@ function Signup() {
       email: email,
       gender: gender,
       address: address,
+      dateOfJoining: dateOfJoining,
     };
 
     try {
@@ -98,6 +100,18 @@ function Signup() {
                 value={employeeId}
                 onChange={(e) => setEmployeeId(e.target.value)}
                 placeholder="Enter your Employee ID"
+                required
+              />
+            </div>
+
+            <div className="input-group mb-4">
+              <label htmlFor="dateOfJoining" className="block mb-2 text-left text-gray-700">Date of Joining</label>
+              <input
+                type="date"
+                id="dateOfJoining"
+                className="w-full p-1 text-base border-2 border-gray-300 rounded-md"
+                value={dateOfJoining}
+                onChange={(e) => setDateOfJoining(e.target.value)}
                 required
               />
             </div>

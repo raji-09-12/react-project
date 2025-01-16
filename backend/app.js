@@ -17,7 +17,7 @@ app.use(express.json());
 
 app.use(cors({
     origin: 'https://react-project-sepia-tau.vercel.app',
-   // origin: 'http://localhost:3000',// Frontend URL
+    //origin: 'http://localhost:3000',// Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 }));
@@ -41,10 +41,10 @@ app.get('/', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { fullname, employeeid, mobileno, password, confirmPassword, email, gender, address } = req.body;
+  const { fullname, employeeid, mobileno, password, confirmPassword, email, gender, address, dateOfJoining } = req.body;
 
   // Validation for required fields
-  if (!fullname || !employeeid || !mobileno || !password || !confirmPassword || !email || !gender || !address) {
+  if (!fullname || !employeeid || !mobileno || !password || !confirmPassword || !email || !gender || !address || !dateOfJoining) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
@@ -85,6 +85,7 @@ app.post('/register', async (req, res) => {
       email,
       gender,
       address,
+      dateOfJoining: new Date(dateOfJoining),
       isAdmin, // Set admin based on condition
     });
 

@@ -38,6 +38,11 @@ const employeeSchema = new mongoose.Schema({
       required: true 
     },
     isAdmin: { type: Boolean, default: false },
+    dateOfJoining: { 
+      type: Date, 
+      required: true, 
+      default: new Date() // Automatically set the current date if not provided
+    }
    
 }, { collection: "UserInfo",
 
