@@ -2,5 +2,5 @@
 @tailwind components;
 @tailwind utilities;
 body {
-    @apply flex justify-center items-center bg-gray-100 font-sans;
+    @apply justify-center items-center bg-gray-100 font-sans;
 }

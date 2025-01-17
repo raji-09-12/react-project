@@ -181,7 +181,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
     <div className="flex ">
       <Sidebar handleLogout={handleLogout} />
       <div className="main-content flex-1 ml-64 p-6">
-        <div className="w-full bg-white p-6 shadow-lg rounded-lg">
+        <div className="w-full max-w-xl sm:max-w-md lg:max-w-7xl bg-white p-6 shadow-lg rounded-lg mx-auto">
           <h2 className="text-2xl font-bold text-center mb-4">Employee Leave History</h2>
           <DateRangePicker
             onChange={(item) => setDateRange([item.selection])}
@@ -211,7 +211,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
 
           {showReport &&  (
           <div className="w-full bg-white p-6 shadow-lg rounded-lg mt-6">
-            <h2 className="text-2xl font-bold text-center mb-4">Leave Report</h2>
+            <h2 className="text-2xl font-bold text-left mb-4">Leave Report</h2>
             <table>
               <thead>
                 <tr className="bg-gray-200">
@@ -241,6 +241,8 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
             <p>Total Leave Days: {totalLeaveDays}</p>
             
           </div> */}
+          <div className="w-full bg-white p-6 shadow-lg rounded-lg mt-6">
+          <h2 className="text-2xl font-bold text-left mb-4">Day-Wise Leave Report</h2>
           <table>
             <thead>
               <tr className="bg-gray-200">
@@ -276,6 +278,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

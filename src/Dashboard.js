@@ -5,11 +5,16 @@ import Sidebar from './EmployeeSidebar';
 
 function Dashboard() {
   const navigate = useNavigate();
+  const [leaveHistory, setLeaveHistory] = useState([]);
   const [userData, setUserData] = useState(null);
   const [totalLeave, setTotalLeave] = useState(0);
   const [totalPermission, setTotalPermission] = useState(0);
   const [loading, setLoading] = useState(true);
-  
+  const [totals, setTotals] = useState({
+    //totalApproved: 0,
+    totalRejected: 0,
+    totalPending: 0,
+  });
   const [error, setError] = useState(null);
 
 
@@ -54,9 +59,16 @@ function Dashboard() {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}dashboard-stats`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-       
+        setLeaveHistory(response.data.leaveHistory);
         setTotalLeave(response.data.totalLeave);
         setTotalPermission(response.data.totalPermission);
+        setTotals({
+          totalApproved: response.data.totalApproved,
+          totalRejected: response.data.totalRejected,
+          totalPending: response.data.totalPending,
+        });
+        
+        
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
         setError('Failed to load stats.');
@@ -67,6 +79,14 @@ function Dashboard() {
 
     fetchStats();
   }, []);
+  console.log(totals);
+
+const totalLeaveDays = leaveHistory.reduce((total, leave) => {
+  if (leave.leaveType?.toLowerCase() === 'leave') {
+    return total + (leave.totalDays || 0); // Add totalDays for "Leave" entries
+  }
+  return total;
+}, 0);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -84,7 +104,7 @@ function Dashboard() {
         
 
         {/* Display total leave and total permission */}
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        <div className="mt-6 grid lg:grid-cols-7 sm:grid-cols-2 lg:grid-cols-2 gap-6 overflow-x-auto">
           <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
             <h3 className="text-xl font-semibold text-gray-800">Total Leave Request</h3>
             <p className="text-2xl font-bold text-gray-600">{totalLeave}</p>
@@ -92,6 +112,22 @@ function Dashboard() {
           <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
             <h3 className="text-xl font-semibold text-gray-800 ">Total Permission</h3>
             <p className="text-2xl font-bold text-gray-600">{totalPermission}</p>
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
+            <h3 className="text-xl font-semibold text-gray-800">Total Leave Days</h3>
+            <p className="text-2xl font-bold text-gray-600">{totalLeaveDays}</p>
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
+            <h3 className="text-xl font-semibold text-gray-800 ">Total Pending</h3>
+            <p className="text-2xl font-bold text-gray-600">{totals.totalPending}</p>
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
+            <h3 className="text-xl font-semibold text-gray-800 ">Total Approved</h3>
+            <p className="text-2xl font-bold text-gray-600">{totals.totalApproved}</p>
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
+            <h3 className="text-xl font-semibold text-gray-800 ">Total Rejected</h3>
+            <p className="text-2xl font-bold text-gray-600">{totals.totalRejected}</p>
           </div>
         </div>
         

@@ -66,7 +66,7 @@ function Dashboard() {
 
   
 
-  const normalizeDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+const normalizeDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
 const today = new Date();
 const todayNormalized = normalizeDate(today);  // Normalize today's date
@@ -158,9 +158,9 @@ const todayLeaveData = leaveHistory.filter((leave) => {
   return (
     <div className="flex min-h-screen">
       <Sidebar handleLogout={handleLogout} />
-      <div className="ml-64 p-14 w-full">
+      <div className="ml-64 p-14 w-full ">
         <h2 className="text-2xl font-bold mb-4">Welcome to {userData?.fullname}</h2>
-        <div className="mt-6 grid grid-cols-7 gap-6 overflow-x-auto">
+        <div className="mt-6 grid lg:grid-cols-7 sm:grid-cols-2 gap-6 overflow-x-auto">
           <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
             <h3 className="text-xl font-semibold text-gray-800">Total Employee</h3>
             <p className="text-2xl font-bold text-gray-600">{employees.length}</p>

@@ -375,20 +375,29 @@ app.get('/dashboard-stats', authenticateToken, async (req, res) => {
     }
 
     // Count total leave and permission applications for the user
-    
+    const leaveHistory = await LeaveApplication.find({ userId });
     const totalLeave = await LeaveApplication.countDocuments({ userId, leaveType: 'Leave' });
     const totalPermission = await LeaveApplication.countDocuments({ userId, leaveType: 'Permission' });
 
+    // Count the Pending, Approved, and Rejected leaves
+    const totalApproved = await LeaveApplication.countDocuments({userId, status: "Approved" });
+    const totalRejected = await LeaveApplication.countDocuments({userId,status: "Rejected" });
+    const totalPending = await LeaveApplication.countDocuments({userId, status: "Pending" });
+
+    // Return the counts in the response
     res.status(200).json({
+      leaveHistory,
       totalLeave,
-      totalPermission
+      totalPermission,
+      totalPending,
+      totalApproved,
+      totalRejected
     });
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
     res.status(500).json({ message: 'Failed to fetch dashboard stats.' });
   }
 });
-
 
 app.get('/admin-profile', authenticateToken, async (req, res) => {
   try {
