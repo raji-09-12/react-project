@@ -42,6 +42,10 @@ const employeeSchema = new mongoose.Schema({
       type: Date, 
       required: true, 
       default: new Date() // Automatically set the current date if not provided
+    },
+    profilePic: { 
+      type: String, 
+      default: ''  // Store the URL or path of the profile picture if uploaded
     }
    
 }, { collection: "UserInfo",

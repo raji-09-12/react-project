@@ -12,6 +12,7 @@ function Profile() {
   const [email, setEmail] = useState('');
   const [gender, setGender] = useState('');
   const [address, setAddress] = useState('');
+  const [profilePic, setProfilePic] = useState(null);
   const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -40,6 +41,7 @@ function Profile() {
       setEmail(response.data.email);
       setGender(response.data.gender);
       setAddress(response.data.address);
+      setProfilePic(response.data.profilePic);
     })
     .catch(error => {
       console.error('Error fetching profile', error);
@@ -61,7 +63,8 @@ function Profile() {
     const updatedData = {
       email,
       gender,
-      address
+      address,
+      profilePic
     };
 
     // Send the updated profile to the backend
@@ -79,6 +82,26 @@ function Profile() {
     .catch(error => {
       console.error('Error updating profile', error);
       setError('Error updating profile data');
+    });
+  };
+
+  const handleImageUpload = (e) => {
+    const formData = new FormData();
+    formData.append('profilePic', e.target.files[0]);
+
+    const token = localStorage.getItem('token');
+    axios.post(`${process.env.REACT_APP_API_URL}uploads`, formData, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    .then(response => {
+      setProfilePic(response.data.fileUrl);  // Update profile picture after upload
+      setSuccess('Profile picture updated successfully!');
+    })
+    .catch(error => {
+      setError('Error uploading profile picture');
     });
   };
 
@@ -106,6 +129,20 @@ function Profile() {
           {/* User Data */}
           {userData ? (
             <form onSubmit={handleUpdate} className="space-y-4">
+
+              <div className="mb-4 text-center">
+                <img
+                  src={profilePic}  // Fallback to default if no picture
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full mx-auto mb-2"
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="block w-full text-gray-700"
+                />
+              </div>
               {/* Full Name */}
               <div className="input-group mb-4">
                 <label htmlFor="fullName" className="block mb-2 text-left text-gray-700">Full Name</label>
@@ -182,6 +219,7 @@ function Profile() {
                   required
                 />
               </div>
+              
 
               {/* Submit button */}
               <button

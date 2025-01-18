@@ -32,7 +32,7 @@ function App() {
       <Route path="/admin-profile" element={<AdminProfile />} />
       <Route path="/leave-history" element={<AdminViewLeave />} />
       <Route path="/employees" element={<AdminEmployeeList />} />
-      <Route path="/edit-employee/:id" element={<AdminEditEmployee />} />
+      <Route path="/admin-edit-employee/:id" element={<AdminEditEmployee />} />
        <Route path="/admin-addemployee" element={<AddEmployee />} />
 
       

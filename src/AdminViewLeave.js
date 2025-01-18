@@ -267,7 +267,17 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                   <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
-                  <td className="border border-gray-400 px-4 py-2">{leave.status}</td>
+                  <td className="border border-gray-400 px-4 py-2"><span
+                                                className={`px-2 py-1 rounded ${
+                                                    leave.status === 'Approved'
+                                                        ? 'bg-green-500 text-white'
+                                                        : leave.status === 'Rejected'
+                                                        ? 'bg-red-500 text-white'
+                                                        : 'bg-yellow-500 text-white'
+                                                }`}
+                                            >
+                                                {leave.status}
+                                            </span></td>
                   <td className="border border-gray-400 px-4 py-2">
                     <div className="flex space-x-4">
                       <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" onClick={() => handleApprove(leave._id)}>Approve</button>

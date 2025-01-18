@@ -6,15 +6,70 @@ const LeaveApplication = require('./models/Leave');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 //const bodyParser = require('body-parser');
-
+const nodemailer = require('nodemailer');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// Serve static files (uploaded images)
+app.use(cors());
+
 //app.use(morgan('dev'));
 //const morgan = require('morgan');
 //app.use(bodyParser.json());
 
+// Define storage for the uploaded files using multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Ensure unique file names
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Define route to handle file upload
+app.post('/uploads', upload.single('profilePic'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded');
+  }
+
+  // Return the file path or URL of the uploaded file
+  res.status(200).send({ fileUrl: `/uploads/${req.file.filename}` });
+});
+app.use('/uploads', express.static('uploads'));
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'plestarrajeshwari01@gmail.com',  // Your admin email address
+    pass: 'Plestar@7542',  // Your email password or an app-specific password if you have 2FA enabled
+  },
+});
+
+
+// Function to send email
+const sendConfirmationEmail = async (userEmail, userFullName) => {
+  const mailOptions = {
+    from: 'plestarrajeshwari01@gmail.com',
+    to: userEmail,
+    subject: 'Thank You for Registering!',
+    text: `Dear ${userFullName},\n\nThank you for registering with us! Your account has been successfully created.\n\nBest Regards,\nThe Admin Team`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Confirmation email sent successfully');
+  } catch (error) {
+    console.error('Error sending confirmation email:', error);
+  }
+};
 app.use(cors({
     origin: 'https://react-project-sepia-tau.vercel.app',
     //origin: 'http://localhost:3000',// Frontend URL
@@ -68,6 +123,10 @@ app.post('/register', async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: 'Employee ID is already registered' });
     }
+    const existingEmail = await UserInfo.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: 'Email is already registered' });
+    }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -90,6 +149,7 @@ app.post('/register', async (req, res) => {
     });
 
     await newUser.save();
+    await sendConfirmationEmail(email, fullname);
 
     res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
@@ -148,7 +208,7 @@ const authenticateToken = (req, res, next) => {
     }
   };
   
-app.get('/profile', authenticateToken, async (req, res) => {
+app.get('/profile', authenticateToken,  async (req, res) => {
     try {
       // Assuming the token is decoded and user ID is available in `req.user.id`
       const user = await UserInfo.findById(req.user.id);
@@ -167,7 +227,7 @@ app.get('/profile', authenticateToken, async (req, res) => {
   app.put('/profile', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id; // Extract user ID from decoded token
-        const { email, gender, address } = req.body; // Extract fields to update
+        const { email, gender, address, profilePic } = req.body; // Extract fields to update
 
         // Validate the input
         if (!email || !gender || !address) {
@@ -177,7 +237,7 @@ app.get('/profile', authenticateToken, async (req, res) => {
         // Find the user and update their profile
         const updatedUser = await UserInfo.findByIdAndUpdate(
             userId,
-            { email, gender, address },
+            { email, gender, address, profilePic },
             { new: true } // Return the updated document
         );
 
@@ -418,7 +478,7 @@ app.get('/admin-profile', authenticateToken, async (req, res) => {
 app.put('/admin-profile', authenticateToken, async (req, res) => {
   try {
       const userId = req.user.id; // Extract user ID from decoded token
-      const { email, gender, address } = req.body; // Extract fields to update
+      const { email, gender, address, profilePic } = req.body; // Extract fields to update
 
       // Validate the input
       if (!email || !gender || !address) {
@@ -428,7 +488,7 @@ app.put('/admin-profile', authenticateToken, async (req, res) => {
       // Find the user and update their profile
       const updatedUser = await UserInfo.findByIdAndUpdate(
           userId,
-          { email, gender, address },
+          { email, gender, address, profilePic },
           { new: true } // Return the updated document
       );
 
@@ -485,7 +545,7 @@ app.get('/leave-history', async (req, res) => {
 
 app.get('/employees', async (req, res) => {
   try {
-    const employees = await UserInfo.find(); // Fetch all employee data
+    const employees = await UserInfo.find({ isAdmin: false }); // Fetch all employee data
     res.json(employees);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching employee data' });
@@ -669,14 +729,50 @@ app.post('/add-basic', async (req, res) => {
   }
 });
 
-app.get('/userid', async (req, res) => {
+
+app.get('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
   try {
-    const user = await EmployeeInfo.find(); // Fetch all employee data
-    res.json(user);
+    const employee = await UserInfo.findById(req.params.id);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+    res.status(200).json(employee);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching employee data' });
+    console.error('Error fetching employee:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+app.put('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params; // Get employee ID from the URL
+  const { fullname, email, gender, address, mobileno, dateOfJoining } = req.body; // Extract fields to update
+
+  try {
+    // Validate input
+    if (!fullname || !email || !gender || !address || !mobileno || !dateOfJoining) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    // Find employee and update their details
+    const updatedEmployee = await UserInfo.findByIdAndUpdate(
+      id,
+      { fullname, email, gender, address, mobileno, dateOfJoining },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ message: 'Employee not found.' });
+    }
+
+    res.status(200).json({ message: 'Employee updated successfully.', data: updatedEmployee });
+  } catch (error) {
+    console.error('Error updating employee:', error);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+
+
 
 app.listen(5001, () => {
     console.log('Server running on port 5000');

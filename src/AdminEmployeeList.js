@@ -117,6 +117,7 @@ function AdminEmployeeList() {
                       icon={faEdit}
                       className="text-green-500 cursor-pointer mr-3 hover:text-green-600"
                      // onClick={() => handleEdit(employee._id)} // Redirect to Edit page
+                     onClick={() => navigate(`/admin-edit-employee/${employee._id}`)}
                   />
               
                   <FontAwesomeIcon

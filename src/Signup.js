@@ -14,6 +14,7 @@ function Signup() {
   const [dateOfJoining, setDateOfJoining] = useState('');
   const [error, setError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
   
   const handleSubmit = async (event) => {
@@ -33,6 +34,8 @@ function Signup() {
       setError('Password must be at least 6 characters');
       return;
     }
+
+    setLoading(true);
 
     const user = {
       fullname: fullName,
@@ -57,11 +60,13 @@ function Signup() {
       alert('Registration successful!');
     } catch (error) {
       setError(error.response ? error.response.data.message : error.message);
+    }finally {
+      setLoading(false); // Reset loading state
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center bg-gray-100">
       <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="w-1/2 bg-gray-100 flex justify-center items-center p-3">
           <img
@@ -73,7 +78,7 @@ function Signup() {
 
         <div className="w-1/2 p-7 flex flex-col justify-center">
           <h3 className="text-2xl font-bold text-gray-800 text-center mb-2">Welcome</h3>
-          <h2 className="mb-6 text-2xl font-bold text-gray-800">Create an Account</h2>
+          <h2 className="mb-6 text-2xl font-bold text-center text-gray-800">Create an Account</h2>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             {error && <div className="error-message mb-4 text-sm text-red-500 text-center">{error}</div>}
@@ -212,8 +217,9 @@ function Signup() {
             <button 
               type="submit"
               className="w-full py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={loading}
             >
-              Sign Up
+              {loading ? 'Signing Up...' : 'Sign Up'}
             </button>
           </form>
 
