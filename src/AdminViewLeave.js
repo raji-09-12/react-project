@@ -95,8 +95,7 @@ function AdminViewLeave() {
 
   const normalizeDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-  const today = new Date();  // Get today's date
-  const todayNormalized = normalizeDate(today);  // Normalize today's date
+ 
   
   const filteredLeaveHistoryData = leaveHistory.filter((leave) => {
     // Normalize the leave's start and end dates
@@ -104,20 +103,25 @@ function AdminViewLeave() {
     const leaveEndDate = normalizeDate(new Date(leave.endDate || leave.startDate)); // Handle single-day leave
   
     // Check if today is within the leave date range (inclusive)
-    const isLeaveToday = todayNormalized >= leaveStartDate && todayNormalized <= leaveEndDate;
+    const rangeStart = normalizeDate(dateRange[0].startDate);
+    const rangeEnd = normalizeDate(dateRange[0].endDate);
   
-    // Check if the leave date falls within the selected date range
-    const isWithinRange = leaveStartDate <= dateRange[0].endDate && leaveEndDate >= dateRange[0].startDate;
-  
-    return isWithinRange && isLeaveToday && leave.status !== 'Rejected';  // Include only leaves that are in range and include today
+    return (
+      leaveStartDate <= rangeEnd &&
+      leaveEndDate >= rangeStart &&
+      leave.status !== 'Rejected' // Exclude rejected leaves
+    );
   });
   
 
-const handleViewLeave = () => {
-  setFilteredLeaveHistory(filteredLeaveHistoryData);  // Update the filtered data
-  setIsFiltered(true);  // Set the filter state to true
-  setShowReport(true);
-};
+  const handleViewLeave = () => {
+    const filteredData = filteredLeaveHistoryData;
+    setFilteredLeaveHistory(filteredData); // Update filtered data
+    setIsFiltered(true);
+    setShowReport(filteredData.length > 0); // Show report only if data exists
+  };
+
+
 const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
 
   
@@ -209,7 +213,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
           
 
 
-          {showReport &&  (
+          {showReport && reportData.length > 0 &&   (
           <div className="w-full bg-white p-6 shadow-lg rounded-lg mt-6">
             <h2 className="text-2xl font-bold text-left mb-4">Leave Report</h2>
             <table>
@@ -267,17 +271,19 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                   <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
-                  <td className="border border-gray-400 px-4 py-2"><span
-                                                className={`px-2 py-1 rounded ${
-                                                    leave.status === 'Approved'
-                                                        ? 'bg-green-500 text-white'
-                                                        : leave.status === 'Rejected'
-                                                        ? 'bg-red-500 text-white'
-                                                        : 'bg-yellow-500 text-white'
-                                                }`}
-                                            >
-                                                {leave.status}
-                                            </span></td>
+                  <td className="border border-gray-400 px-4 py-2">
+                  <span
+                    className={`px-2 py-1 rounded ${
+                        leave.status === 'Approved'
+                            ? 'bg-green-500 text-white'
+                            : leave.status === 'Rejected'
+                            ? 'bg-red-500 text-white'
+                            : 'bg-yellow-500 text-white'
+                    }`}
+                >
+                    {leave.status}
+                </span>
+                  </td>
                   <td className="border border-gray-400 px-4 py-2">
                     <div className="flex space-x-4">
                       <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" onClick={() => handleApprove(leave._id)}>Approve</button>
