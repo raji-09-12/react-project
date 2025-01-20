@@ -106,7 +106,7 @@ const totalLeaveDays = leaveHistory.reduce((total, leave) => {
         
 
         {/* Display total leave and total permission */}
-        <div className="mt-6 grid lg:grid-cols-7 sm:grid-cols-2 lg:grid-cols-2 gap-6 overflow-x-auto">
+        <div className="mt-6 grid lg:grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 gap-6 overflow-x-auto">
           <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
             <h3 className="text-xl font-semibold text-gray-800">Total Leave Request</h3>
             <p className="text-2xl font-bold text-gray-600">{totalLeave}</p>
@@ -132,7 +132,31 @@ const totalLeaveDays = leaveHistory.reduce((total, leave) => {
             <p className="text-2xl font-bold text-gray-600">{totals.totalRejected}</p>
           </div>
         </div>
-        
+        {/* Display total leave and total permission 
+        <div className="mt-6 grid lg:grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 gap-6 overflow-x-auto">
+          <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
+            
+            <p className="text-2xl font-bold text-gray-600"> Leave Request : {totalLeave}</p>
+            
+            <p className="text-2xl font-bold text-gray-600"> Total Leave Days : {totalLeaveDays}</p>
+            <p className="text-2xl font-bold text-gray-600"> Pending : {totalLeaveDays}</p>
+            <p className="text-2xl font-bold text-gray-600"> Approved : {totals.totalApproved}</p>
+            <p className="text-2xl font-bold text-gray-600">  Rejected : {totals.totalRejected}</p>
+           
+
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-8 border border-pink-300">
+          
+            <p className="text-2xl font-bold text-gray-600">  Permission Request  : {totalPermission}</p>
+            <p className="text-2xl font-bold text-gray-600"> Total Permission : {totalLeaveDays}</p>
+            <p className="text-2xl font-bold text-gray-600"> Pending : {totalLeaveDays}</p>
+            <p className="text-2xl font-bold text-gray-600"> Approved : {totals.totalApproved}</p>
+            <p className="text-2xl font-bold text-gray-600">  Rejected : {totals.totalRejected}</p>
+           
+          </div>
+          
+        </div>
+        */}
 
         </div>
       </div>

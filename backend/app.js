@@ -443,6 +443,7 @@ app.get('/dashboard-stats', authenticateToken, async (req, res) => {
     const totalApproved = await LeaveApplication.countDocuments({userId, status: "Approved" });
     const totalRejected = await LeaveApplication.countDocuments({userId,status: "Rejected" });
     const totalPending = await LeaveApplication.countDocuments({userId, status: "Pending" });
+    const totalCancelled = await LeaveApplication.countDocuments({userId, status: "Cancelled" });
 
     // Return the counts in the response
     res.status(200).json({
@@ -451,7 +452,8 @@ app.get('/dashboard-stats', authenticateToken, async (req, res) => {
       totalPermission,
       totalPending,
       totalApproved,
-      totalRejected
+      totalRejected,
+      
     });
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
@@ -674,6 +676,25 @@ app.put('/reject-leave/:id', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+app.put('/cancel-leave/:leaveId', async (req, res) => {
+  const { leaveId } = req.params;
+  try {
+      const leave = await LeaveApplication.findByIdAndUpdate(
+          leaveId,
+          { status: 'Cancelled' },
+          { new: true }
+      );
+      if (!leave) {
+          return res.status(404).json({ error: 'Leave not found' });
+      }
+      res.json({ message: 'Leave cancelled successfully', leave });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 // In routes/leaveRoutes.js
 

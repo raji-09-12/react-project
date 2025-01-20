@@ -14,7 +14,7 @@ const LeaveApplicationSchema = new mongoose.Schema({
   endDate: { type: Date },
   reason: { type: String, required: true },
   totalDays: { type: Number, required: true },
-  status: { type: String, enum: ["Pending", "Approved", "Rejected"], default: "Pending" },
+  status: { type: String, enum: ["Pending", "Approved", "Rejected", "Cancel"], default: "Pending" },
 });
 
 module.exports = mongoose.model("LeaveApplication", LeaveApplicationSchema);

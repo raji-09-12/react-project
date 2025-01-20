@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from './EmployeeSidebar';
 import { DateRangePicker } from 'react-date-range';
 import { addDays } from 'date-fns'; // For manipulating the date range
@@ -92,27 +92,40 @@ const filteredLeaves = leaves.filter((leave) => {
 
     const displayLeaves = isDefaultDateRange() ? leaves : filteredLeaves;
 
-    const handleDelete = async (leaveId) => {
+    
+
+    const handleEdit = (leaveId) => {
+        navigate(`/edit-leave/${leaveId}`);
+    };
+
+    const handleCancel = async (leaveId) => {
+        const confirmCancel = window.confirm('Are you sure you want to cancel this leave?');
+        if (!confirmCancel) {
+            return; // Exit if the user does not confirm
+        }
         const token = localStorage.getItem('token');
         if (!token) {
             setError("User not logged in.");
             return;
         }
-
+    
         try {
-            await axios.delete(`${process.env.REACT_APP_API_URL}delete-leave/${leaveId}`, {
+            await axios.put(`${process.env.REACT_APP_API_URL}cancel-leave/${leaveId}`, null, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setLeaves(leaves.filter((leave) => leave._id !== leaveId));
+    
+            // Update the leave's status in the state
+            setLeaves(leaves.map((leave) =>
+                leave._id === leaveId ? { ...leave, status: 'Cancelled' } : leave
+            ));
+    
+            setError(''); // Clear any previous errors
         } catch (error) {
-            console.error("Error deleting leave application:", error);
-            setError("Failed to delete leave application.");
+            console.error("Error cancelling leave:", error);
+            setError("Failed to cancel leave.");
         }
     };
-
-    const handleEdit = (leaveId) => {
-        navigate(`/edit-leave/${leaveId}`);
-    };
+    
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -163,7 +176,9 @@ const filteredLeaves = leaves.filter((leave) => {
                                     <th className="border border-gray-400 px-4 py-2">End Date</th>
                                     <th className="border border-gray-400 px-4 py-2">Total Leave</th>
                                     <th className="border border-gray-400 px-4 py-2">Edit</th>
-                                    <th className="border border-gray-400 px-4 py-2">Delete</th>
+                                
+                                    <th className="border border-gray-400 px-4 py-2">Cancel</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -179,6 +194,8 @@ const filteredLeaves = leaves.filter((leave) => {
                                                         ? 'bg-green-500 text-white'
                                                         : leave.status === 'Rejected'
                                                         ? 'bg-red-500 text-white'
+                                                        : leave.status === 'Cancelled'
+                                                        ? 'bg-blue-500 text-white'
                                                         : 'bg-yellow-500 text-white'
                                                 }`}
                                             >
@@ -193,7 +210,7 @@ const filteredLeaves = leaves.filter((leave) => {
                                         </td>
                                         <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
                                         <td className="border border-gray-400 px-4 py-2">
-                                            {leave.status !== 'Approved' && leave.status !== 'Rejected' && (
+                                            {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
                                                 <FontAwesomeIcon
                                                     icon={faEdit}
                                                     className="text-green-500 cursor-pointer mr-3 hover:text-green-600"
@@ -201,15 +218,18 @@ const filteredLeaves = leaves.filter((leave) => {
                                                 />
                                             )}
                                         </td>
+                                        
                                         <td className="border border-gray-400 px-4 py-2">
-                                            {leave.status !== 'Approved' && leave.status !== 'Rejected' && (
-                                                <FontAwesomeIcon
-                                                    icon={faTrash}
-                                                    className="text-red-500 cursor-pointer hover:text-red-600"
-                                                    onClick={() => handleDelete(leave._id)}
-                                                />
-                                            )}
+                                            {leave.status !== 'Approved' && leave.status !== 'Rejected'&& leave.status !== 'Cancelled' &&
+                                                <button
+                                                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                                                    onClick={() => handleCancel(leave._id)}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            }
                                         </td>
+
                                     </tr>
                                 ))}
                             </tbody>
