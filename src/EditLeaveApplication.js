@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import Sidebar from './EmployeeSidebar';
 
 const EditLeaveApplication = () => {
   const { leaveId } = useParams(); // Get leaveId from route params
@@ -15,6 +16,10 @@ const EditLeaveApplication = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [totalDays, setTotalDays] = useState(0);
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   useEffect(() => {
     if (leaveType === 'Leave') {
@@ -90,18 +95,12 @@ const EditLeaveApplication = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="flex min-h-screen bg-gray-100">  
-    <div className="w-64 bg-gray-800 text-white p-6 fixed h-full left-0 top-0">
-        <h2 className="text-2xl font-bold mb-8">Dashboard</h2>
-        <ul>
-          <li><a href="/dashboard" className="block py-2 px-4 hover:bg-blue-700 rounded">Dashboard</a></li>
-          <li><a href="/profile" className="block py-2 px-4 hover:bg-blue-700 rounded">Profile</a></li>
-          <li><a href="/apply-leave" className="block py-2 px-4 hover:bg-blue-700 rounded">Apply Leave</a></li>
-          <li><a href="/view-leaves" className="block py-2 px-4 hover:bg-blue-700 rounded">Leave History</a></li>
-        </ul>
-      </div>
+    
+    
       <div className="flex-1 p-6">
-      <div className="w-full max-w-lg bg-white p-6 shadow-lg rounded-lg">
+      <div className="w-full max-w-lg bg-white p-6 shadow-lg rounded-lg mx-auto">
+      <Sidebar handleLogout={handleLogout} /> 
+      <div className="flex-1 p-6">
       <h2 className="text-2xl font-bold text-center mb-4">Update for Leave or Permission</h2>
 
   
@@ -263,7 +262,8 @@ const EditLeaveApplication = () => {
           </form>
           </div>
           </div>
-        </div>
+          </div>
+        
   );
 };
 
