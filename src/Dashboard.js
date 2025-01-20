@@ -82,7 +82,9 @@ function Dashboard() {
   console.log(totals);
 
 const totalLeaveDays = leaveHistory.reduce((total, leave) => {
-  if (leave.leaveType?.toLowerCase() === 'leave') {
+  if (leave.leaveType?.toLowerCase() === 'leave'  && // Check if it's a "Leave"
+  leave.status?.toLowerCase() !== 'rejected'   // Exclude rejected leaves
+  ) {
     return total + (leave.totalDays || 0); // Add totalDays for "Leave" entries
   }
   return total;
