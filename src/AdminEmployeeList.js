@@ -69,7 +69,7 @@ function AdminEmployeeList() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="flex ">
+    <div className="flex min-h-screen bg-gray-100">
       
         <Sidebar handleLogout={handleLogout} />
      

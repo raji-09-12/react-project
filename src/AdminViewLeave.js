@@ -109,7 +109,8 @@ function AdminViewLeave() {
     return (
       leaveStartDate <= rangeEnd &&
       leaveEndDate >= rangeStart &&
-      leave.status !== 'Rejected' // Exclude rejected leaves
+       leave.status !== 'Rejected' &&    
+      leave.status !== 'Cancelled'   // Exclude rejected leaves
     );
   });
   
@@ -160,6 +161,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         }
       );
+      
 
       if (response.status === 200) {
         setLeaveHistory((prevState) =>
@@ -175,6 +177,34 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
       alert('Error rejecting leave. Please try again.');
     }
   };
+
+  const handleCancel = async (leaveId) => {
+    const confirmCancel = window.confirm('Are you sure you want to cancel this leave?');
+    if (!confirmCancel) {
+        return; // Exit if the user does not confirm
+    }
+    const token = localStorage.getItem('token');
+    if (!token) {
+        setError("User not logged in.");
+        return;
+    }
+
+    try {
+        await axios.put(`${process.env.REACT_APP_API_URL}cancel-leave/${leaveId}`, null, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // Update the leave's status in the state
+        setLeaveHistory(leaveHistory.map((leave) =>
+            leave._id === leaveId ? { ...leave, status: 'Cancelled' } : leave
+        ));
+
+        setError(''); // Clear any previous errors
+    } catch (error) {
+        console.error("Error cancelling leave:", error);
+        setError("Failed to cancel leave.");
+    }
+};
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -278,6 +308,8 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                             ? 'bg-green-500 text-white'
                             : leave.status === 'Rejected'
                             ? 'bg-red-500 text-white'
+                            : leave.status === 'Cancelled'
+                            ? 'bg-blue-500 text-white'
                             : 'bg-yellow-500 text-white'
                     }`}
                 >
@@ -286,8 +318,12 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                   </td>
                   <td className="border border-gray-400 px-4 py-2">
                     <div className="flex space-x-4">
-                      <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" onClick={() => handleApprove(leave._id)}>Approve</button>
-                      <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onClick={() => handleReject(leave._id)}>Reject</button>
+                    {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
+                      <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" onClick={() => handleApprove(leave._id)}>Approve</button>)}
+                      {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
+                      <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onClick={() => handleReject(leave._id)}>Reject</button>)}
+                      {leave.status === 'Approved' &&  (
+                      <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={() => handleCancel(leave._id)}>Cancel</button>)}
                     </div>
                   </td>
                 </tr>

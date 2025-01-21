@@ -77,7 +77,7 @@ function LeaveApplication() {
   }
 
     const isDateTaken = existingLeaves.some((leave) => {
-      if (leave.status?.toLowerCase() === 'rejected') {
+      if (leave.status?.toLowerCase() === 'rejected' || leave.status?.toLowerCase() === 'cancelled') {
         return false;
       }
       const leaveStartDate = new Date(leave.startDate);

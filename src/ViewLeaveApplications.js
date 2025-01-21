@@ -134,7 +134,7 @@ const filteredLeaves = leaves.filter((leave) => {
 
             {/* Main Content */}
             <div className="main-content flex-1 ml-64 p-6">
-                <div className="w-full bg-white p-6 shadow-lg rounded-lg">
+                <div className="w-full max-w-xl sm:max-w-md lg:max-w-7xl bg-white p-6 shadow-lg rounded-lg mx-auto">
                     <h2 className="text-2xl font-bold text-center mb-4">Leave History</h2>
                     <DateRangePicker
                         onChange={(item) => setDateRange([item.selection])}
@@ -222,7 +222,7 @@ const filteredLeaves = leaves.filter((leave) => {
                                         <td className="border border-gray-400 px-4 py-2">
                                             {leave.status !== 'Approved' && leave.status !== 'Rejected'&& leave.status !== 'Cancelled' &&
                                                 <button
-                                                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                                                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                                                     onClick={() => handleCancel(leave._id)}
                                                 >
                                                     Cancel
