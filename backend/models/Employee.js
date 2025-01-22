@@ -46,6 +46,11 @@ const employeeSchema = new mongoose.Schema({
     profilePic: { 
       type: String, 
       default: ''  // Store the URL or path of the profile picture if uploaded
+    },
+    status: { 
+      type: String, 
+      enum: ['active', 'inactive'], // The employee can either be active or inactive
+      default: 'active' // Default value is "active"
     }
    
 }, { collection: "UserInfo",

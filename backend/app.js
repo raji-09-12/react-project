@@ -71,8 +71,8 @@ const sendConfirmationEmail = async (userEmail, userFullName) => {
   }
 };
 app.use(cors({
-    origin: 'https://react-project-sepia-tau.vercel.app',
-    //origin: 'http://localhost:3000',// Frontend URL
+    //origin: 'https://react-project-sepia-tau.vercel.app',
+    origin: 'http://localhost:3000',// Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 }));
@@ -537,13 +537,23 @@ app.get('/admin-dashboard', authenticateToken, authenticateAdmin, async (req, re
 
 app.get('/leave-history', async (req, res) => {
   try {
-    
-    const leaveHistory = await LeaveApplication.find().populate('userId', 'fullname employeeid email gender address'); // Populating employee details
+    // Step 1: Get all active employees
+    const activeEmployees = await UserInfo.find({ status: 'active' }).select('_id'); // Fetch only active employees
+
+    // Step 2: Get leave applications for active employees
+    const leaveHistory = await LeaveApplication.find({
+      userId: { $in: activeEmployees.map(employee => employee._id) } // Only fetch leave records of active employees
+    })
+    .populate('userId', 'fullname employeeid email gender address') // Populate employee details
+    .sort({ appliedDate: -1 });
+
+    // Step 3: Respond with filtered leave history
     res.status(200).json(leaveHistory);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching leave history' });
   }
 });
+
 
 app.get('/employees', async (req, res) => {
   try {
@@ -584,6 +594,29 @@ app.delete('/employees/:id', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error deleting employee:', error);
     res.status(500).json({ message: 'Error deleting employee' });
+  }
+});
+
+// Update Employee Status to Inactive
+app.put('/employees/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body; // status should be either "inactive" or "active"
+
+  try {
+    // Find the employee and update their status
+    const updatedEmployee = await UserInfo.findByIdAndUpdate(
+      id,
+      { status }, // Update the status field
+      { new: true } // Return the updated employee document
+    );
+
+    if (updatedEmployee) {
+      res.status(200).json(updatedEmployee);
+    } else {
+      res.status(404).json({ message: 'Employee not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating employee status' });
   }
 });
 

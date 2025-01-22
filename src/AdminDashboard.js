@@ -140,15 +140,15 @@ const todayLeaveData = leaveHistory.filter((leave) => {
 
   
   const totalLeaveDays = leaveHistory.reduce((total, leave) => {
-    if (leave.leaveType?.toLowerCase() === 'leave') {
+    if (leave.leaveType?.toLowerCase() === 'leave' && leave.status?.toLowerCase() === 'approved') {
       return total + (leave.totalDays || 0); // Add totalDays for "Leave" entries
     }
     return total;
   }, 0);
 
   const totalPermissionDays = leaveHistory.reduce((total, leave) => {
-    if (leave.leaveType?.toLowerCase() === 'permission'  // Check if it's "Permission"
-        ) { 
+    if (leave.leaveType?.toLowerCase() === 'permission' &&  // Check if it's "Permission"
+    leave.status?.toLowerCase() === 'approved') { 
       return total + (leave.totalDays || 0); // Add totalDays for "Permission" entries
     }
     return total;

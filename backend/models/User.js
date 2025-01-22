@@ -12,6 +12,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  roal: {
+    type: String,
+    required: true,
+  },
 }, { collection: "EmployeeInfo" });  // Store in 'employees' collection
 
 const EmployeeInfo = mongoose.model('EmployeeInfo', userSchema);

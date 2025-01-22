@@ -48,6 +48,7 @@ function AdminViewLeave() {
           
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
+        
         setLeaveHistory(response.data);
       } catch (error) {
         setError('Error fetching leave history');
@@ -68,6 +69,14 @@ function AdminViewLeave() {
       endDate: addDays(new Date(), 7),
       key: 'selection',
     }]); // Reset the date range to the default range
+    console.log("Applied Dates for Leaves:");
+    leaveHistory.forEach((leave) => {
+      console.log({
+        employeeId: leave.userId?.employeeid || "N/A",
+        employeeName: leave.userId?.fullname || "N/A",
+        appliedDate: new Date(leave.appliedDate).toLocaleDateString(),
+      });
+    });
   };
 
   
@@ -109,8 +118,8 @@ function AdminViewLeave() {
     return (
       leaveStartDate <= rangeEnd &&
       leaveEndDate >= rangeStart &&
-       leave.status !== 'Rejected' &&    
-      leave.status !== 'Cancelled'   // Exclude rejected leaves
+       leave.status === 'Approved'   
+      
     );
   });
   
@@ -128,6 +137,8 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
   
 
   const handleApprove = async (id) => {
+    const confirmApproval = window.confirm("Are you sure you want to approve this leave?");
+    if (confirmApproval) {
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}approve-leave/${id}`,
@@ -150,9 +161,12 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
     } catch (error) {
       alert('Error approving leave. Please try again.');
     }
+   }
   };
 
   const handleReject = async (id) => {
+    const confirmRejection = window.confirm("Are you sure you want to reject this leave?");
+    if (confirmRejection) {
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}reject-leave/${id}`,
@@ -176,6 +190,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
     } catch (error) {
       alert('Error rejecting leave. Please try again.');
     }
+   }
   };
 
   const handleCancel = async (leaveId) => {
@@ -322,7 +337,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                       <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" onClick={() => handleApprove(leave._id)}>Approve</button>)}
                       {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
                       <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onClick={() => handleReject(leave._id)}>Reject</button>)}
-                      {leave.status === 'Approved' &&  (
+                      {leave.status === 'Approved' && new Date(leave.endDate) && new Date(leave.startDate)>= new Date() && (
                       <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={() => handleCancel(leave._id)}>Cancel</button>)}
                     </div>
                   </td>

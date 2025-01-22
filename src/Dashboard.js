@@ -104,13 +104,13 @@ function Dashboard() {
       if (leave.leaveType?.toLowerCase() === 'leave') {
         // Calculating totals for leave
         if (leave.status?.toLowerCase() === 'approved') {
-          totals.totalApprovedLeave += 1|| 0;
+          totals.totalApprovedLeave += 1;
         } else if (leave.status?.toLowerCase() === 'pending') {
-          totals.totalPendingLeave += 1|| 0;
+          totals.totalPendingLeave += 1;
         } else if (leave.status?.toLowerCase() === 'rejected') {
-          totals.totalRejectedLeave += 1 || 0;
+          totals.totalRejectedLeave += 1 ;
         } else if (leave.status?.toLowerCase() === 'cancelled') {
-          totals.totalCancelledLeave += 1 || 0;
+          totals.totalCancelledLeave += 1;
         }
       } else if (leave.leaveType?.toLowerCase() === 'permission') {
         // Calculating totals for permission
@@ -130,7 +130,7 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    if (leaveHistory.length > 0) {
+    if (leaveHistory.length >= 0) {
       const calculatedTotals = calculateLeaveAndPermissionStats(leaveHistory);
       setTotals(calculatedTotals);
     }

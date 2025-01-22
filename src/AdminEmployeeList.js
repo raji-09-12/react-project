@@ -30,7 +30,8 @@ function AdminEmployeeList() {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}employees`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
-        setEmployees(response.data);
+        const activeEmployees = response.data.filter((employee) => employee.status === 'active'); // Only show active employees
+        setEmployees(activeEmployees);
       } catch (error) {
         setError('Error fetching employee details');
       } finally {
@@ -48,12 +49,15 @@ function AdminEmployeeList() {
     const confirmDelete = window.confirm('Are you sure you want to delete this employee?');
     if (confirmDelete) {
       try {
-        const response = await axios.delete(`${process.env.REACT_APP_API_URL}employees/${employeeId}`, {
+        const response = await axios.put(`${process.env.REACT_APP_API_URL}employees/${employeeId}`, 
+          { status: 'inactive' },
+          {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         if (response.status === 200) {
           // Remove employee from the list after successful deletion
-          setEmployees(employees.filter(employee => employee._id !== employeeId));
+          setEmployees(employees.filter((employee) => employee._id !== employeeId));
+          alert('Employee removed from the list.');
         } else {
           console.log('Failed to delete employee:', response);
           setError('Failed to delete employee');
