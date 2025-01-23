@@ -558,6 +558,7 @@ app.get('/leave-history', async (req, res) => {
 app.get('/employees', async (req, res) => {
   try {
     const employees = await UserInfo.find({ isAdmin: false }); // Fetch all employee data
+    
     res.json(employees);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching employee data' });
@@ -733,7 +734,8 @@ app.put('/cancel-leave/:leaveId', async (req, res) => {
 
 app.get('/leave-history/:id', async (req, res) => {
   try {
-    const leaveHistory = await LeaveApplication.find({}).populate("userId", "employeeid fullname");
+    const activeEmployees = await UserInfo.find({ status: 'active' }).select('_id'); // Fetch only active employees
+    const leaveHistory = await LeaveApplication.find({userId: { $in: activeEmployees.map(employee => employee._id) } }).populate("userId", "employeeid fullname");
     
     // Count the number of leaves with each status
     const totalApproved = await LeaveApplication.countDocuments({ status: "Approved" });
@@ -755,11 +757,12 @@ app.get('/leave-history/:id', async (req, res) => {
 
 // POST route for adding an employee with only employeeid and fullname
 app.post('/add-basic', async (req, res) => {
+  console.log(req.body);
   try {
-    const { employeeid, fullname } = req.body;
+    const { employeeid, fullname, roal } = req.body;
 
     // Validate if employeeid and fullname are provided
-    if (!employeeid || !fullname) {
+    if (!employeeid || !fullname || !roal) {
       return res.status(400).json({ message: 'Employee ID and Full Name are required' });
     }
 
@@ -772,7 +775,8 @@ app.post('/add-basic', async (req, res) => {
     // Create a new employee
     const newEmployee = new EmployeeInfo({
       employeeid,
-      fullname
+      fullname,
+      roal,
     });
 
     await newEmployee.save();

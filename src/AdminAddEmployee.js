@@ -6,6 +6,7 @@ import Sidebar from './AdminSidebar';  // Import Sidebar
 function AddEmployee() {
   const [employeeId, setEmployeeId] = useState('');
   const [fullName, setFullName] = useState('');
+  const [roal, setRoal] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -22,7 +23,7 @@ function AddEmployee() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!employeeId || !fullName) {
+    if (!employeeId || !fullName || !roal) {
       setError('Both Employee ID and Full Name are required');
       return;
     }
@@ -30,13 +31,15 @@ function AddEmployee() {
     const employee = {
         employeeid: employeeId,
         fullname: fullName,
+        roal: roal,
         
 
     };
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}add-basic`,employee,
+        `${process.env.REACT_APP_API_URL}add-basic`,
+        employee,
        // { employeeid, fullname },
         {
           headers: {
@@ -87,6 +90,24 @@ function AddEmployee() {
               required
             />
           </div>
+          <div className="input-group mb-4">
+              <label htmlFor="roal" className="block text-lg font-medium">Roal</label>
+              <select
+                id="roal"
+                className="w-full p-2 border border-gray-300 rounded"
+                value={roal}
+                onChange={(e) => setRoal(e.target.value)}
+                required
+              >
+                <option value="">Select Roal</option>
+                
+                <option value="Manger">Manager</option>
+                <option value="Department Leader">Department Leader</option>
+                <option value="TeamLeader">Team Leader</option>
+                <option value="Employee">Employee</option>
+              </select>
+            </div>
+
           <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
             Add Employee
           </button>
