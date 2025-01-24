@@ -13,6 +13,8 @@ function AdminEditEmployee() {
     address: '',
     mobileno: '',
     dateOfJoining: '',
+    role: '',
+    department: '',
   });
   const [error, setError] = useState(null);
 
@@ -23,6 +25,7 @@ function AdminEditEmployee() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    console.log("Employee ID:", id);
 
     if (!token) {
       window.location.href = '/login'; // Redirect to login page if no token is found
@@ -34,7 +37,10 @@ function AdminEditEmployee() {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .then((response) => setEmployee(response.data))
-      .catch((err) => setError('Error fetching employee details'));
+      .catch((err) => {
+        console.error('Error fetching:', err);
+        setError('Error fetching employee details')
+      });
   }, [id]);
 
   const handleChange = (e) => {
@@ -79,6 +85,37 @@ function AdminEditEmployee() {
           className="block w-full p-2 border mb-4"
           required
         />
+        <label>Department</label>
+        <select
+          name="department"
+          value={employee.department}
+          onChange={handleChange}
+          className="block w-full p-2 border mb-4"
+          required
+        >
+          <option value="">Select Department</option>
+          <option value="IT">IT</option>
+          <option value="BPO">BPO</option>
+          
+          {/* Add any other roles you need */}
+        </select>
+        <label>Role</label>
+        <select
+          name="role"
+          value={employee.role}
+          onChange={handleChange}
+          className="block w-full p-2 border mb-4"
+          required
+        >
+          <option value="">Select Role</option>
+          <option value="Manager">Manager</option>
+          <option value="Department Leader">Department Leader</option>
+          <option value="TeamLeader">Team Leader</option>
+          <option value="Employee">Employee</option>
+          
+          {/* Add any other roles you need */}
+        </select>
+
         <label>Email</label>
         <input
           type="email"
@@ -121,7 +158,7 @@ function AdminEditEmployee() {
         />
         <label>Date of Joining</label>
         <input
-          type="date"
+          type="text"
           name="dateOfJoining"
           value={employee.dateOfJoining}
           onChange={handleChange}

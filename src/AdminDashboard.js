@@ -48,7 +48,8 @@ function Dashboard() {
         const employeeResponse = await axios.get(`${process.env.REACT_APP_API_URL}employees`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
-        setEmployees(employeeResponse.data);
+        const activeEmployees = employeeResponse.data.filter((employee) => employee.status === 'active');
+        setEmployees(activeEmployees);
 
         const leaveResponse = await axios.get(`${process.env.REACT_APP_API_URL}leave-history/:id`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },

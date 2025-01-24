@@ -557,13 +557,45 @@ app.get('/leave-history', async (req, res) => {
 
 app.get('/employees', async (req, res) => {
   try {
-    const employees = await UserInfo.find({ isAdmin: false }); // Fetch all employee data
-    
+    const employees = await UserInfo.aggregate([
+      {
+        $lookup: {
+          from: 'EmployeeInfo', // Name of the EmployeeInfo collection
+          localField: 'employeeid', // Field in UserInfo
+          foreignField: 'employeeid', // Matching field in EmployeeInfo
+          as: 'roleDetails', // Alias for the joined data
+        },
+      },
+      {
+        $unwind: {
+          path: '$roleDetails', // Unwind the roleDetails array
+          preserveNullAndEmptyArrays: true, // Allow employees without a matching role
+        },
+      },
+      {
+        $project: {
+          fullname: 1,
+          employeeid: 1,
+          mobileno: 1,
+          email: 1,
+          gender: 1,
+          address: 1,
+          dateOfJoining: 1,
+          profilePic: 1,
+          status: 1,
+          role: '$roleDetails.role', 
+          department: '$roleDetails.department',
+        },
+      },
+    ]);
+
     res.json(employees);
   } catch (error) {
+    console.error('Error fetching employees:', error);
     res.status(500).json({ message: 'Error fetching employee data' });
   }
 });
+
 
 app.get('/employees/count', (req, res) => {
   Employee.countDocuments({}, (err, count) => {
@@ -758,11 +790,11 @@ app.get('/leave-history/:id', async (req, res) => {
 // POST route for adding an employee with only employeeid and fullname
 app.post('/add-basic', async (req, res) => {
   console.log(req.body);
-  try {
-    const { employeeid, fullname, roal } = req.body;
+  
+    const { employeeid, fullname, role, department } = req.body;
 
     // Validate if employeeid and fullname are provided
-    if (!employeeid || !fullname || !roal) {
+    if (!employeeid || !fullname || !role || !department) {
       return res.status(400).json({ message: 'Employee ID and Full Name are required' });
     }
 
@@ -771,12 +803,13 @@ app.post('/add-basic', async (req, res) => {
     if (existingEmployee) {
       return res.status(400).json({ message: 'Employee ID already exists' });
     }
-
+  try {
     // Create a new employee
     const newEmployee = new EmployeeInfo({
       employeeid,
       fullname,
-      roal,
+      role,
+      department,
     });
 
     await newEmployee.save();
@@ -794,6 +827,8 @@ app.get('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
+    
+    
     res.status(200).json(employee);
   } catch (error) {
     console.error('Error fetching employee:', error);
@@ -804,7 +839,7 @@ app.get('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
 
 app.put('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
   const { id } = req.params; // Get employee ID from the URL
-  const { fullname, email, gender, address, mobileno, dateOfJoining } = req.body; // Extract fields to update
+  const { fullname, email, gender, address, mobileno, dateOfJoining, role, department, } = req.body; // Extract fields to update
 
   try {
     // Validate input
@@ -819,7 +854,14 @@ app.put('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
       { new: true } // Return the updated document
     );
 
-    if (!updatedEmployee) {
+    const updatedRole = await EmployeeInfo.findOneAndUpdate(
+      { employeeid: updatedEmployee.employeeid },
+      { role, department },
+      
+      { new: true }
+    );
+
+    if (!updatedEmployee || !updatedRole) {
       return res.status(404).json({ message: 'Employee not found.' });
     }
 
@@ -827,6 +869,16 @@ app.put('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error updating employee:', error);
     res.status(500).json({ message: 'Server error.' });
+  }
+});
+
+app.get('/team-leaders', async (req, res) => {
+  try {
+    const teamLeaders = await EmployeeInfo.find({ role: 'TeamLeader' }, 'fullname employeeid');
+    res.json(teamLeaders);
+  } catch (error) {
+    console.error('Error fetching team leaders:', error);
+    res.status(500).json({ message: 'Error fetching team leaders' });
   }
 });
 

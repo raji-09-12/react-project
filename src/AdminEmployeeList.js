@@ -98,12 +98,15 @@ function AdminEmployeeList() {
           <tr className="w-full border-collapse border border-gray-400">
             <th className="border border-gray-400 px-4 py-2">Employee ID</th>
             <th className="border border-gray-400 px-4 py-2">Full Name</th>
+            <th className="border border-gray-400 px-4 py-2">Department</th>
+            <th className="border border-gray-400 px-4 py-2">Role</th>
             <th className="border border-gray-400 px-4 py-2">Date of Joining</th>
             <th className="border border-gray-400 px-4 py-2">Mobile NO</th>
             <th className="border border-gray-400 px-4 py-2">Email</th>
             <th className="border border-gray-400 px-4 py-2">Gender</th>
             <th className="border border-gray-400 px-4 py-2">Address</th>
             <th className="border border-gray-400 px-4 py-2">Actions</th>
+            
           </tr>
         </thead>
         <tbody>
@@ -111,6 +114,8 @@ function AdminEmployeeList() {
             <tr key={employee._id}>
               <td className="border border-gray-400 px-4 py-2">{employee.employeeid}</td>
               <td className="border border-gray-400 px-4 py-2">{employee.fullname}</td>
+              <td className="border border-gray-400 px-4 py-2">{employee.department || 'N/A'}</td>
+              <td className="border border-gray-400 px-4 py-2">{employee.role || 'N/A'}</td>
               <td className="border border-gray-400 px-4 py-2"> {new Date(employee.dateOfJoining).toLocaleDateString('en-CA')} </td>
               <td className="border border-gray-400 px-4 py-2">{employee.mobileno}</td>
               <td className="border border-gray-400 px-4 py-2">{employee.email}</td>

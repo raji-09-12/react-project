@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './AdminSidebar';  // Import Sidebar
@@ -6,9 +6,29 @@ import Sidebar from './AdminSidebar';  // Import Sidebar
 function AddEmployee() {
   const [employeeId, setEmployeeId] = useState('');
   const [fullName, setFullName] = useState('');
-  const [roal, setRoal] = useState('');
+  const [role, setRole] = useState('');
+  const [subRole, setSubRole] = useState(''); 
+  const [department, setDepartment] = useState('');
+  const [teamLeaders, setTeamLeaders] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  useEffect(() => {
+    // Fetch team leaders from the backend
+    const fetchTeamLeaders = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}team-leaders`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        setTeamLeaders(response.data); // Set the fetched team leaders
+      } catch (error) {
+        console.error('Error fetching team leaders:', error);
+      }
+    };
+
+    fetchTeamLeaders();
+  }, []);
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
@@ -23,7 +43,7 @@ function AddEmployee() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!employeeId || !fullName || !roal) {
+    if (!employeeId || !fullName || !role || !department ) {
       setError('Both Employee ID and Full Name are required');
       return;
     }
@@ -31,7 +51,8 @@ function AddEmployee() {
     const employee = {
         employeeid: employeeId,
         fullname: fullName,
-        roal: roal,
+        role: 'Employee' && subRole ? subRole : role,
+        department: department,
         
 
     };
@@ -91,15 +112,30 @@ function AddEmployee() {
             />
           </div>
           <div className="input-group mb-4">
-              <label htmlFor="roal" className="block text-lg font-medium">Roal</label>
+              <label htmlFor="department" className="block text-lg font-medium">Department</label>
               <select
-                id="roal"
+                id="department"
                 className="w-full p-2 border border-gray-300 rounded"
-                value={roal}
-                onChange={(e) => setRoal(e.target.value)}
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
                 required
               >
-                <option value="">Select Roal</option>
+                <option value="">Select Department</option>
+                
+                <option value="IT">IT</option>
+                <option value="BPO">BPO</option>
+              </select>
+            </div>
+          <div className="input-group mb-4">
+              <label htmlFor="role" className="block text-lg font-medium">Role</label>
+              <select
+                id="role"
+                className="w-full p-2 border border-gray-300 rounded"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
+              >
+                <option value="">Select Role</option>
                 
                 <option value="Manger">Manager</option>
                 <option value="Department Leader">Department Leader</option>
@@ -107,6 +143,24 @@ function AddEmployee() {
                 <option value="Employee">Employee</option>
               </select>
             </div>
+            {role === 'Employee' && (
+              <div>
+                <label className="block text-lg font-medium">Assign Team Leader</label>
+                <select
+                  value={subRole}
+                  onChange={(e) => setSubRole(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                >
+                  <option value="">Select Team Leader</option>
+                  {teamLeaders.map((leader) => (
+                    <option key={leader.employeeid} value={leader.fullname}>
+                      {leader.fullname}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
           <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
             Add Employee
