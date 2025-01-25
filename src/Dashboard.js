@@ -162,11 +162,11 @@ const totalPermissionDays = leaveHistory.reduce((total, leave) => {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <Sidebar handleLogout={handleLogout} />
+      <Sidebar handleLogout={handleLogout} role={userData.role} />
 
       {/* Main Content */}
       <div className="ml-64 p-14 w-full">
-        <h2 className="text-5xl text-center font-bold mb-4">Welcome  {userData.fullname}</h2>
+        <h2 className="text-5xl text-center font-bold mb-4">Welcome  {userData.fullname} </h2>
         
 
        

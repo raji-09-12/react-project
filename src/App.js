@@ -16,6 +16,7 @@ import AdminEditEmployee from './AdminEditEmployee';
 import AddEmployee from './AdminAddEmployee';
 
 
+
 function App() {
   return (
     <Routes>
@@ -33,7 +34,7 @@ function App() {
       <Route path="/leave-history" element={<AdminViewLeave />} />
       <Route path="/employees" element={<AdminEmployeeList />} />
       <Route path="/admin-edit-employee/:id" element={<AdminEditEmployee />} />
-       <Route path="/admin-addemployee" element={<AddEmployee />} />
+      <Route path="/admin-addemployee" element={<AddEmployee />} />
 
       
     </Routes>

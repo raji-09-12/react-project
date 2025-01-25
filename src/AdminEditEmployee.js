@@ -15,7 +15,9 @@ function AdminEditEmployee() {
     dateOfJoining: '',
     role: '',
     department: '',
+    assignedTeamLeader: '',
   });
+  const [teamLeaders, setTeamLeaders] = useState([]);
   const [error, setError] = useState(null);
 
   const handleLogout = () => {
@@ -41,6 +43,13 @@ function AdminEditEmployee() {
         console.error('Error fetching:', err);
         setError('Error fetching employee details')
       });
+      // Fetch team leaders
+      axios
+      .get(`${process.env.REACT_APP_API_URL}team-leaders`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      .then((response) => setTeamLeaders(response.data))
+      .catch((err) => console.error('Error fetching team leaders:', err));
   }, [id]);
 
   const handleChange = (e) => {
@@ -115,6 +124,25 @@ function AdminEditEmployee() {
           
           {/* Add any other roles you need */}
         </select>
+        {employee.role === 'Employee' && (
+          <div>
+            <label>Assign Team Leader</label>
+            <select
+              name="assignedTeamLeader"
+              value={employee.assignedTeamLeader}
+              onChange={handleChange}
+              className="block w-full p-2 border mb-4"
+              required
+            >
+              <option value="">Select Team Leader</option>
+              {teamLeaders.map((leader) => (
+                <option key={leader._id} value={leader.fullname}>
+                  {leader.fullname}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <label>Email</label>
         <input

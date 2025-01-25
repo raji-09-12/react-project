@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const UserInfo = require('./models/Employee');
 const EmployeeInfo = require('./models/User');
 const LeaveApplication = require('./models/Leave');
@@ -208,21 +208,66 @@ const authenticateToken = (req, res, next) => {
     }
   };
   
-app.get('/profile', authenticateToken,  async (req, res) => {
+  app.get('/profile', authenticateToken, async (req, res) => {
     try {
       // Assuming the token is decoded and user ID is available in `req.user.id`
-      const user = await UserInfo.findById(req.user.id);
-      
-      if (!user) {
+      const userId = req.user.id;
+  
+      // Check if the userId is valid
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID format' });
+      }
+  
+      // Fetch user profile along with additional role and department details
+      const user = await UserInfo.aggregate([
+        {
+          $match: { _id: new mongoose.Types.ObjectId(userId) }, // Match the specific user by their ID
+        },
+        {
+          $lookup: {
+            from: 'EmployeeInfo', // Name of the EmployeeInfo collection (or any other collection with role details)
+            localField: 'employeeid', // Field in UserInfo
+            foreignField: 'employeeid', // Matching field in EmployeeInfo
+            as: 'roleDetails', // Alias for the joined data
+          },
+        },
+        {
+          $unwind: {
+            path: '$roleDetails', // Unwind the roleDetails array (if any)
+            preserveNullAndEmptyArrays: true, // Allow users without role details
+          },
+        },
+        {
+          $project: {
+            fullname: 1,
+            employeeid: 1,
+            mobileno: 1,
+            email: 1,
+            gender: 1,
+            address: 1,
+            dateOfJoining: 1,
+            profilePic: 1,
+            status: 1,
+            role: '$roleDetails.role', // Extract the role
+            department: '$roleDetails.department', // Extract the department
+            assignedTeamLeader: '$roleDetails.assignedTeamLeader', // Extract the team leader if available
+          },
+        },
+      ]);
+  
+      // Check if user was found
+      if (!user || user.length === 0) {
         return res.status(404).json({ message: 'User not found' });
       }
   
-      res.status(200).json(user); // Return user profile data
+      // Return the user data with role and department details
+      res.status(200).json(user[0]); // Return the first (and only) result
     } catch (error) {
       console.error('Error fetching user profile:', error);
       res.status(500).json({ message: 'Server error' });
     }
   });
+  
   
   app.put('/profile', authenticateToken, async (req, res) => {
     try {
@@ -453,6 +498,7 @@ app.get('/dashboard-stats', authenticateToken, async (req, res) => {
       totalPending,
       totalApproved,
       totalRejected,
+      totalCancelled,
       
     });
   } catch (error) {
@@ -585,6 +631,7 @@ app.get('/employees', async (req, res) => {
           status: 1,
           role: '$roleDetails.role', 
           department: '$roleDetails.department',
+          assignedTeamLeader: '$roleDetails.assignedTeamLeader'
         },
       },
     ]);
@@ -791,10 +838,10 @@ app.get('/leave-history/:id', async (req, res) => {
 app.post('/add-basic', async (req, res) => {
   console.log(req.body);
   
-    const { employeeid, fullname, role, department } = req.body;
+    const { employeeid, fullname, role, department, assignedTeamLeader  } = req.body;
 
     // Validate if employeeid and fullname are provided
-    if (!employeeid || !fullname || !role || !department) {
+    if (!employeeid || !fullname || !role || !department ) {
       return res.status(400).json({ message: 'Employee ID and Full Name are required' });
     }
 
@@ -810,6 +857,7 @@ app.post('/add-basic', async (req, res) => {
       fullname,
       role,
       department,
+      assignedTeamLeader: role === 'Employee' ? assignedTeamLeader : null,
     });
 
     await newEmployee.save();
@@ -820,16 +868,49 @@ app.post('/add-basic', async (req, res) => {
   }
 });
 
-
 app.get('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
   try {
-    const employee = await UserInfo.findById(req.params.id);
-    if (!employee) {
+    const employee = await UserInfo.aggregate([
+      {
+        $match: { _id: new mongoose.Types.ObjectId(req.params.id) }, // Match the specific employee by their ID
+      },
+      {
+        $lookup: {
+          from: 'EmployeeInfo', // Name of the EmployeeInfo collection
+          localField: 'employeeid', // Field in UserInfo
+          foreignField: 'employeeid', // Matching field in EmployeeInfo
+          as: 'roleDetails', // Alias for the joined data
+        },
+      },
+      {
+        $unwind: {
+          path: '$roleDetails', // Unwind the roleDetails array
+          preserveNullAndEmptyArrays: true, // Allow employees without a matching role
+        },
+      },
+      {
+        $project: {
+          fullname: 1,
+          employeeid: 1,
+          mobileno: 1,
+          email: 1,
+          gender: 1,
+          address: 1,
+          dateOfJoining: 1,
+          profilePic: 1,
+          status: 1,
+          role: '$roleDetails.role',
+          department: '$roleDetails.department',
+          assignedTeamLeader: '$roleDetails.assignedTeamLeader',
+        },
+      },
+    ]);
+
+    if (!employee || employee.length === 0) {
       return res.status(404).json({ message: 'Employee not found' });
     }
-    
-    
-    res.status(200).json(employee);
+
+    res.status(200).json(employee[0]); // Return the first (and only) result
   } catch (error) {
     console.error('Error fetching employee:', error);
     res.status(500).json({ message: 'Server error' });
@@ -839,7 +920,7 @@ app.get('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
 
 app.put('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
   const { id } = req.params; // Get employee ID from the URL
-  const { fullname, email, gender, address, mobileno, dateOfJoining, role, department, } = req.body; // Extract fields to update
+  const { fullname, email, gender, address, mobileno, dateOfJoining, role, department, assignedTeamLeader,} = req.body; // Extract fields to update
 
   try {
     // Validate input
@@ -856,7 +937,7 @@ app.put('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
 
     const updatedRole = await EmployeeInfo.findOneAndUpdate(
       { employeeid: updatedEmployee.employeeid },
-      { role, department },
+      { role, department, assignedTeamLeader },
       
       { new: true }
     );

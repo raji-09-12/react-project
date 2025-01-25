@@ -20,7 +20,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-}, { collection: "EmployeeInfo" });  // Store in 'employees' collection
+  assignedTeamLeader: {
+    type: String, 
+    required: function () {
+      return this.role === 'Employee';
+    },
+  },
+}, { collection: "EmployeeInfo" });  
 
 const EmployeeInfo = mongoose.model('EmployeeInfo', userSchema);
 

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Sidebar = ({ handleLogout }) => {
+const Sidebar = ({ handleLogout, role }) => {
+  console.log("Role:", role); 
   return (
+    
     <div className="w-64 bg-gray-800 text-white p-6 fixed h-full left-0 top-0">
-      <h2 className="text-xl font-bold mb-6">Employee Panel</h2>
+      <h2 className="text-xl font-bold mb-6">{role === 'TeamLeader' ? 'Team Leader Panel' : 'Employee Panel'}</h2>
       <a href = "/admin-dashboard"> </a>
       <ul>
         <li className="mb-4">
@@ -27,6 +29,14 @@ const Sidebar = ({ handleLogout }) => {
             Leave History
           </Link>
         </li>
+         {/* Conditionally render the "Assign Employees" link for Team Leader only */}
+         {role === 'TeamLeader' && (
+          <li className="mb-4">
+            <Link to="/assign-employees" className="block py-2 px-4 hover:bg-blue-700 rounded">
+              Assign Employees
+            </Link>
+          </li>
+        )}
         <li className="mb-4">
           <button
             onClick={handleLogout}

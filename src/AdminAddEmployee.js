@@ -44,15 +44,16 @@ function AddEmployee() {
     e.preventDefault();
 
     if (!employeeId || !fullName || !role || !department ) {
-      setError('Both Employee ID and Full Name are required');
+      setError('All fields are required');
       return;
     }
 
     const employee = {
         employeeid: employeeId,
         fullname: fullName,
-        role: 'Employee' && subRole ? subRole : role,
+        role: role,
         department: department,
+        assignedTeamLeader: role === 'Employee' ? subRole : null,
         
 
     };

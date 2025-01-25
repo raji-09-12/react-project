@@ -78,7 +78,7 @@ function AdminEmployeeList() {
         <Sidebar handleLogout={handleLogout} />
      
      <div className="main-content flex-1 ml-64 p-6 ">
-      <div className="w-full max-w-xl sm:max-w-md lg:max-w-7xl bg-white p-6 shadow-lg rounded-lg mx-auto">
+      <div className="w-full max-w-fit  lg:max-w-fit bg-white p-6 shadow-lg rounded-lg mx-auto">
       <h2 className="text-2xl font-bold text-center mb-4">Employee Details</h2>
       <div className="text-right mb-4">
         <button 
@@ -100,6 +100,7 @@ function AdminEmployeeList() {
             <th className="border border-gray-400 px-4 py-2">Full Name</th>
             <th className="border border-gray-400 px-4 py-2">Department</th>
             <th className="border border-gray-400 px-4 py-2">Role</th>
+            <th className="border border-gray-400 px-4 py-2">Assign Team Leader</th>            
             <th className="border border-gray-400 px-4 py-2">Date of Joining</th>
             <th className="border border-gray-400 px-4 py-2">Mobile NO</th>
             <th className="border border-gray-400 px-4 py-2">Email</th>
@@ -116,6 +117,7 @@ function AdminEmployeeList() {
               <td className="border border-gray-400 px-4 py-2">{employee.fullname}</td>
               <td className="border border-gray-400 px-4 py-2">{employee.department || 'N/A'}</td>
               <td className="border border-gray-400 px-4 py-2">{employee.role || 'N/A'}</td>
+              <td className="border border-gray-400 px-4 py-2">{employee.role === 'Employee' ? employee.assignedTeamLeader || 'N/A' : 'N/A'}</td>              
               <td className="border border-gray-400 px-4 py-2"> {new Date(employee.dateOfJoining).toLocaleDateString('en-CA')} </td>
               <td className="border border-gray-400 px-4 py-2">{employee.mobileno}</td>
               <td className="border border-gray-400 px-4 py-2">{employee.email}</td>
