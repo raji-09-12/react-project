@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './EmployeeSidebar';
 
-function Profile() {
+function EditProfile() {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -78,6 +78,7 @@ function Profile() {
       setSuccess('Profile updated successfully!');
       setError('');
       setUserData(response.data); // Update local state with the response data
+      navigate('/profile');
     })
     .catch(error => {
       console.error('Error updating profile', error);
@@ -112,7 +113,7 @@ function Profile() {
     <div className="flex-1 p-6 ml-64">
       <div className="flex w-full max-w-lg bg-white shadow-lg rounded-lg overflow-hidden mx-auto">
         <div className="w-full p-7 flex flex-col justify-center">
-          <h2 className="mb-6 text-2xl font-bold text-gray-800 text-center">Profile</h2>
+          <h2 className="mb-6 text-2xl font-bold text-gray-800 text-center">Edit Profile</h2>
 
           {/* Error and Success messages */}
           {error && (
@@ -284,4 +285,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default EditProfile;

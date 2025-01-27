@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { UserProvider } from './UserContext';
 import Login from './Login';
 import Signup from './Signup';
 import Password from './Password';
@@ -14,11 +15,14 @@ import AdminViewLeave from './AdminViewLeave';
 import AdminEmployeeList from './AdminEmployeeList';
 import AdminEditEmployee from './AdminEditEmployee';
 import AddEmployee from './AdminAddEmployee';
+import EditProfile from './EditProfile.js';
+import EmployeeProfile from './EmployeeProfile';
 
 
 
 function App() {
   return (
+    <UserProvider>
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
@@ -35,9 +39,13 @@ function App() {
       <Route path="/employees" element={<AdminEmployeeList />} />
       <Route path="/admin-edit-employee/:id" element={<AdminEditEmployee />} />
       <Route path="/admin-addemployee" element={<AddEmployee />} />
+      <Route path="/emp-editprofile" element={<EditProfile />} />
+      <Route path="/employee-profile/:id" element={<EmployeeProfile />} />
+      
 
       
     </Routes>
+    </UserProvider>
   );
 }
 

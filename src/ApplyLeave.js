@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './EmployeeSidebar';
-
+import { UserContext } from './UserContext';
 function LeaveApplication() {
   const [leaveType, setLeaveType] = useState('');
   const [leaveDuration, setLeaveDuration] = useState('');
+  const { userData } = useContext(UserContext);
   const [permissionType, setPermissionType] = useState('');
   const [halfDayOption, setHalfDayOption] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -20,6 +21,7 @@ function LeaveApplication() {
     localStorage.removeItem('token');
     navigate('/login');
   };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     console.log('Token:', token);
@@ -148,7 +150,7 @@ function LeaveApplication() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <Sidebar handleLogout={handleLogout} />
+      <Sidebar handleLogout={handleLogout} role={userData?.role}/>
 
       {/* Main Content */}
       <div className="flex-1 p-6">

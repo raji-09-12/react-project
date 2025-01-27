@@ -3,15 +3,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './EmployeeSidebar';
 
+
 function Profile() {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
   // Set state for editable fields
-  const [email, setEmail] = useState('');
-  const [gender, setGender] = useState('');
-  const [address, setAddress] = useState('');
   const [profilePic, setProfilePic] = useState(null);
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -33,9 +31,6 @@ function Profile() {
     })
     .then(response => {
       setUserData(response.data);
-      setEmail(response.data.email);
-      setGender(response.data.gender);
-      setAddress(response.data.address);
       setProfilePic(response.data.profilePic);
     })
     .catch(error => {
@@ -54,9 +49,7 @@ function Profile() {
     }
 
     const updatedData = {
-      email,
-      gender,
-      address,
+    
       profilePic
     };
 
@@ -100,21 +93,12 @@ function Profile() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <Sidebar handleLogout={handleLogout} />
+      <Sidebar handleLogout={handleLogout} role = {userData?.role}  />
       <div className="flex-1 p-6 ml-64">
         <div className="flex w-full max-w-lg bg-white shadow-lg rounded-lg overflow-hidden mx-auto">
           <div className="w-full p-7 flex flex-col justify-center">
             <h2 className="mb-6 text-2xl font-bold text-gray-800 text-center">Profile</h2>
-            <div className="text-right mb-4">
-              <button 
-                //onClick={handleAddEmployee} 
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-800"
-              ><a href="/emp-editprofile" >
-                Edit Profile
-                </a>
-              </button>
-            </div>
-
+            
             {/* Error and Success messages */}
             {error && (
               <div className="error-message mb-4 text-sm text-red-500 text-center">
@@ -145,128 +129,30 @@ function Profile() {
                   />
                 </div>
 
-                {/* Fields in Grid layout */}
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label htmlFor="fullName" className="block mb-2 text-left text-gray-700">Full Name</label>
-                    <input
-                      type="text"
-                      id="fullName"
-                      className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={userData.fullname}
-                      readOnly
-                    />
-                  </div>
+                <div className="input-group mb-4">
+                <p className="text-xl font-bold text-gray-600 mb-4 ">Full Name :<span className="text-gray-800  text-xl"> {userData.fullname}</span></p> 
+                <p className="text-xl font-bold text-gray-600 mb-4">Employee ID :<span className="text-gray-800  text-xl"> {userData.employeeid}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Date of Joining :<span className="text-gray-800  text-xl"> {userData.dateOfJoining ? new Date(userData.dateOfJoining).toISOString().slice(0, 10) : ''}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Department :<span className="text-gray-800  text-xl"> {userData.department}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Role  :<span className="text-gray-800  text-xl"> {userData.role}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Mobile Number :<span className="text-gray-800  text-xl"> {userData.mobileno}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Gender :<span className="text-gray-800  text-xl"> {userData.gender}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Address :<span className="text-gray-800  text-xl"> {userData.address}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Email :<span className="text-gray-800  text-xl"> {userData.email}</span></p>
+                
+                
 
-                  <div>
-                    <label htmlFor="employeeId" className="block mb-2 text-left text-gray-700">Employee ID</label>
-                    <input
-                      type="text"
-                      id="employeeId"
-                      className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={userData.employeeid}
-                      readOnly
-                    />
-                  </div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label htmlFor="dateOfJoining" className="block mb-2 text-left text-gray-700">Date of Joining</label>
-                    <input
-                      type="text"
-                      id="dateOfJoining"
-                      className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={userData.dateOfJoining ? new Date(userData.dateOfJoining).toISOString().slice(0, 10) : ''}
-                      readOnly
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="department" className="block mb-2 text-left text-gray-700">Department</label>
-                    <input
-                      type="text"
-                      id="department"
-                      className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={userData.department}
-                      readOnly
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label htmlFor="role" className="block mb-2 text-left text-gray-700">Role</label>
-                    <input
-                      type="text"
-                      id="role"
-                      className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={userData.role}
-                      readOnly
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="mobileno" className="block mb-2 text-left text-gray-700">Mobile Number</label>
-                    <input
-                      type="text"
-                      id="mobileno"
-                      className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={userData.mobileno}
-                      readOnly
-                    />
-                  </div>
-                </div>
-
-                {/* Email and Gender */}
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label htmlFor="email" className="block mb-2 text-left text-gray-700">Email</label>
-                    <input
-                      type="email"
-                      id="email"
-                      className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="gender" className="block mb-2 text-left text-gray-700">Gender</label>
-                    <select
-                      id="gender"
-                      className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={gender}
-                      onChange={(e) => setGender(e.target.value)}
-                      required
-                    >
-                      <option value="">Select Gender</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Address */}
-                <div className="mb-4">
-                  <label htmlFor="address" className="block mb-2 text-left text-gray-700">Address</label>
-                  <textarea
-                    id="address"
-                    className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {/* Submit button */}
                 <button
                   type="submit"
-                  className="w-full py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
+                  className="w-full py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                   Save Changes
                 </button>
+                <div className="text-center mb-4">
+                </div>
+
+
+                
               </form>
             ) : (
               <p>Loading...</p>

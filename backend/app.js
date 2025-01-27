@@ -661,6 +661,10 @@ app.put('/leave-history/:id/approve', (req, res) => {
     .catch(error => res.status(400).json({ error: 'Error approving leave' }));
 });
 
+app.get('/employees/:id', (req, res) => {
+  const employeeId = req.params.id;
+  // logic to fetch employee data by employeeId
+});
 
 
 app.delete('/employees/:id', authenticateToken, async (req, res) => {

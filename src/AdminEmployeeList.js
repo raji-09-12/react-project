@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './AdminSidebar';
 
@@ -43,7 +43,10 @@ function AdminEmployeeList() {
   }, []);
 
 
-  
+  const handleProfileView = (employeeId) => {
+    // Navigate to the employee's profile page
+    navigate(`/employee-profile/${employeeId}`);
+  };
 
   const handleDelete = async (employeeId) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this employee?');
@@ -99,13 +102,9 @@ function AdminEmployeeList() {
             <th className="border border-gray-400 px-4 py-2">Employee ID</th>
             <th className="border border-gray-400 px-4 py-2">Full Name</th>
             <th className="border border-gray-400 px-4 py-2">Department</th>
-            <th className="border border-gray-400 px-4 py-2">Role</th>
-            <th className="border border-gray-400 px-4 py-2">Assign Team Leader</th>            
-            <th className="border border-gray-400 px-4 py-2">Date of Joining</th>
+            <th className="border border-gray-400 px-4 py-2">Role</th>           
             <th className="border border-gray-400 px-4 py-2">Mobile NO</th>
-            <th className="border border-gray-400 px-4 py-2">Email</th>
-            <th className="border border-gray-400 px-4 py-2">Gender</th>
-            <th className="border border-gray-400 px-4 py-2">Address</th>
+            <th className="border border-gray-400 px-4 py-2">Email</th>            
             <th className="border border-gray-400 px-4 py-2">Actions</th>
             
           </tr>
@@ -116,17 +115,18 @@ function AdminEmployeeList() {
               <td className="border border-gray-400 px-4 py-2">{employee.employeeid}</td>
               <td className="border border-gray-400 px-4 py-2">{employee.fullname}</td>
               <td className="border border-gray-400 px-4 py-2">{employee.department || 'N/A'}</td>
-              <td className="border border-gray-400 px-4 py-2">{employee.role || 'N/A'}</td>
-              <td className="border border-gray-400 px-4 py-2">{employee.role === 'Employee' ? employee.assignedTeamLeader || 'N/A' : 'N/A'}</td>              
-              <td className="border border-gray-400 px-4 py-2"> {new Date(employee.dateOfJoining).toLocaleDateString('en-CA')} </td>
+              <td className="border border-gray-400 px-4 py-2">{employee.role || 'N/A'}</td>                                          
               <td className="border border-gray-400 px-4 py-2">{employee.mobileno}</td>
               <td className="border border-gray-400 px-4 py-2">{employee.email}</td>
-              <td className="border border-gray-400 px-4 py-2">{employee.gender}</td>
-              <td className="border border-gray-400 px-4 py-2">{employee.address}</td>
               <td className="border border-gray-400 px-4 py-2">
                   <FontAwesomeIcon
+                      icon={faUser}
+                      className="text-pink-500 cursor-pointer mr-1 hover:text-pink-600"
+                      onClick={() => handleProfileView(employee._id)}
+                  />
+                  <FontAwesomeIcon
                       icon={faEdit}
-                      className="text-green-500 cursor-pointer mr-3 hover:text-green-600"
+                      className="text-green-500 cursor-pointer mr-1 hover:text-green-600"
                      // onClick={() => handleEdit(employee._id)} // Redirect to Edit page
                      onClick={() => navigate(`/admin-edit-employee/${employee._id}`)}
                   />

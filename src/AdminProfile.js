@@ -9,9 +9,7 @@ function Profile() {
   const [success, setSuccess] = useState('');
 
   // Set state for editable fields
-  const [email, setEmail] = useState('');
-  const [gender, setGender] = useState('');
-  const [address, setAddress] = useState('');
+  
   const [profilePic, setProfilePic] = useState(null);
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -38,9 +36,7 @@ function Profile() {
       setUserData(response.data); // Assuming response contains user profile
 
       // Prepopulate editable fields with existing data
-      setEmail(response.data.email);
-      setGender(response.data.gender);
-      setAddress(response.data.address);
+      
       setProfilePic(response.data.profilePic);
     })
     .catch(error => {
@@ -61,9 +57,7 @@ function Profile() {
 
     // Prepare the updated user profile data
     const updatedData = {
-      email,
-      gender,
-      address,
+      
       profilePic
     };
 
@@ -143,84 +137,15 @@ function Profile() {
                   className="block w-full text-gray-700"
                 />
               </div>
-              {/* Full Name */}
               <div className="input-group mb-4">
-                <label htmlFor="fullName" className="block mb-2 text-left text-gray-700">Full Name</label>
-                <input
-                  type="text"
-                  id="fullName"
-                  className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={userData.fullname}
-                  readOnly
-                />
-              </div>
-
-              {/* Employee ID */}
-              <div className="input-group mb-4">
-                <label htmlFor="fullName" className="block mb-2 text-left text-gray-700">Employee Id</label>
-                <input
-                  type="text"
-                  id="fullName"
-                  className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={userData.employeeid}
-                  readOnly
-                />
-              </div>
-
-              {/* Mobile Number */}
-              <div className="input-group mb-4">
-                <label htmlFor="fullName" className="block mb-2 text-left text-gray-700">Mobile Number</label>
-                <input
-                  type="text"
-                  id="fullName"
-                  className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={userData.mobileno}
-                  readOnly
-                />
-              </div>
-
-              {/* Email */}
-              <div className="input-group mb-4">
-                <label htmlFor="email" className="block mb-2 text-left text-gray-700">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-
-              {/* Gender */}
-              <div className="input-group mb-4">
-                <label htmlFor="gender" className="block mb-2 text-left text-gray-700">Gender</label>
-                <select
-                  id="gender"
-                  className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  required
-                >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </div>
-
-              {/* Address */}
-              <div className="input-group mb-4">
-                <label htmlFor="address" className="block mb-2 text-left text-gray-700">Address</label>
-                <textarea
-                  id="address"
-                  className="w-full p-1 text-base border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  required
-                />
-              </div>
+                <p className="text-xl font-bold text-gray-600 mb-4 ">Full Name :<span className="text-gray-800  text-xl"> {userData.fullname}</span></p> 
+                <p className="text-xl font-bold text-gray-600 mb-4">Employee ID :<span className="text-gray-800  text-xl"> {userData.employeeid}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Mobile Number :<span className="text-gray-800  text-xl"> {userData.mobileno}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Gender :<span className="text-gray-800  text-xl"> {userData.gender}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Address :<span className="text-gray-800  text-xl"> {userData.address}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">Email :<span className="text-gray-800  text-xl"> {userData.email}</span></p>
+                </div>
               
-
               {/* Submit button */}
               <button
                 type="submit"

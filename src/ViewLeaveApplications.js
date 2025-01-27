@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from './UserContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,7 +11,9 @@ import { enUS } from 'date-fns/locale'; // Import the locale
 import 'react-date-range/dist/styles.css'; // Main style file
 import 'react-date-range/dist/theme/default.css'; // Theme CSS file
 
+
 const ViewLeaveApplications = () => {
+    const { userData } = useContext(UserContext);
     const [leaves, setLeaves] = useState([]);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -130,7 +133,7 @@ const filteredLeaves = leaves.filter((leave) => {
     return (
         <div className="flex min-h-screen bg-gray-100">
             {/* Sidebar */}
-            <Sidebar handleLogout={handleLogout} />
+            <Sidebar handleLogout={handleLogout} role={userData?.role}/>
 
             {/* Main Content */}
             <div className="main-content flex-1 ml-64 p-6">
