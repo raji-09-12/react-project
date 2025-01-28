@@ -6,6 +6,11 @@ const LeaveApplicationSchema = new mongoose.Schema({
     ref: "UserInfo",
     required: true,
   },
+  employeeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "EmployeeInfo", 
+    required: true,
+  },
   leaveType: { type: String, required: true },
   leaveDuration: { type: String },
   permissionType: { type: String },
@@ -15,7 +20,7 @@ const LeaveApplicationSchema = new mongoose.Schema({
   reason: { type: String, required: true },
   totalDays: { type: Number, required: true },
   status: { type: String, enum: ["Pending", "Approved", "Rejected", "Cancel"], default: "Pending" },
-  appliedDate: { type: Date, default: new Date() }, // Automatically sets current date
+  appliedDate: { type: Date, default: new Date() }, 
 });
 
 module.exports = mongoose.model("LeaveApplication", LeaveApplicationSchema);

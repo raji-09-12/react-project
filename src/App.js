@@ -17,6 +17,7 @@ import AdminEditEmployee from './AdminEditEmployee';
 import AddEmployee from './AdminAddEmployee';
 import EditProfile from './EditProfile.js';
 import EmployeeProfile from './EmployeeProfile';
+import LeaderViewLeave from './LeaderViewLeave';
 
 
 
@@ -41,6 +42,7 @@ function App() {
       <Route path="/admin-addemployee" element={<AddEmployee />} />
       <Route path="/emp-editprofile" element={<EditProfile />} />
       <Route path="/employee-profile/:id" element={<EmployeeProfile />} />
+      <Route path="/leader-view-leave-history" element={<LeaderViewLeave />} />
       
 
       

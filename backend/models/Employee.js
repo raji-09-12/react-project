@@ -41,16 +41,16 @@ const employeeSchema = new mongoose.Schema({
     dateOfJoining: { 
       type: Date, 
       required: true, 
-      default: new Date() // Automatically set the current date if not provided
+      default: new Date() 
     },
     profilePic: { 
       type: String, 
-      default: ''  // Store the URL or path of the profile picture if uploaded
+      default: ''  
     },
     status: { 
       type: String, 
-      enum: ['active', 'inactive'], // The employee can either be active or inactive
-      default: 'active' // Default value is "active"
+      enum: ['active', 'inactive'], 
+      default: 'active' 
     }
    
 }, { collection: "UserInfo",
