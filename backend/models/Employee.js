@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 // Define schema for employee data
 const employeeSchema = new mongoose.Schema({
+  
   fullname: {
     type: String,
     required: true

@@ -50,8 +50,29 @@ function LeaderViewLeave() {
           
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
+        const allLeaves = response.data;
+      const leaderDepartment = userData?.department || "";
+      const userRole = userData?.role || ""; 
+
+      let departmentLeaves = [];
+
+      
+      if (userRole === "TeamLeader") {
         
-        setLeaveHistory(response.data);
+        departmentLeaves = allLeaves.filter(
+          (leave) => leave?.employeeDetails?.department === leaderDepartment && leave?.employeeDetails?.role === "Employee"
+        );
+      
+      }else if (userRole === "Department Leader") {
+        
+        departmentLeaves = allLeaves.filter(
+          (leave) => 
+            leave?.employeeDetails?.department === leaderDepartment && 
+            leave?.employeeDetails?.role !== "Department Leader"
+        );
+      }
+
+      setLeaveHistory(departmentLeaves);
       } catch (error) {
         setError('Error fetching leave history');
       } finally {
@@ -60,7 +81,9 @@ function LeaderViewLeave() {
     };
     
     fetchLeaveHistory();
-  }, []);
+  }, [userData]);
+
+  
   
   const handleShowAllLeave = () => {
     setFilteredLeaveHistory([]); // Clear the filtered history
@@ -75,8 +98,8 @@ function LeaderViewLeave() {
     leaveHistory
     .forEach((leave) => {
       console.log({
-        employeeId: leave.userId?.employeeid || "N/A",
-        employeeName: leave.userId?.fullname || "N/A",
+        employeeId: leave.userDetails?.employeeid || "N/A",
+        employeeName: leave.userDetails?.fullname || "N/A",
         appliedDate: new Date(leave.appliedDate).toLocaleDateString(),
       });
     });
@@ -84,11 +107,11 @@ function LeaderViewLeave() {
 
   
   const groupedLeaveHistory = filteredLeaveHistory.reduce((acc, leave) => {
-    const employeeId = leave.userId.employeeid;
+    const employeeId = leave.userDetails.employeeid;
     if (!acc[employeeId]) {
       acc[employeeId] = {
         employeeId,
-        employeeName: leave.userId.fullname,
+        employeeName: leave?.userDetails?.fullname,
         totalLeaveDays: 0,
         totalPermissions: 0,
       };
@@ -313,11 +336,11 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
             <tbody>
               {displayLeaveHistory.map((leave) => (
                 <tr key={leave._id}>
-                  <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeid}</td>
-                  <td className="border border-gray-400 px-4 py-2">{leave.userId.fullname}</td>
-                  <td className="border border-gray-400 px-4 py-2">{leave.userId.role}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave?.userDetails?.employeeid}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave?.userDetails?.fullname}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave?.employeeDetails?.role}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.leaveType}-{leave.permissionType} </td>
-                  <td className="border border-gray-400 px-4 py-2">{leave.reason}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave?.reason}</td>
                   <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>

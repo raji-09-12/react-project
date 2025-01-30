@@ -96,22 +96,23 @@ app.get('/', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { fullname, employeeid, mobileno, password, confirmPassword, email, gender, address, dateOfJoining } = req.body;
-
-  // Validation for required fields
-  if (!fullname || !employeeid || !mobileno || !password || !confirmPassword || !email || !gender || !address || !dateOfJoining) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
-
-  if (password !== confirmPassword) {
-    return res.status(400).json({ message: 'Passwords do not match' });
-  }
-
-  if (password.length < 6) {
-    return res.status(400).json({ message: 'Password must be at least 6 characters' });
-  }
+  
 
   try {
+    const { fullname, employeeid, mobileno, password, confirmPassword, email, gender, address, dateOfJoining } = req.body;
+
+  // Validation for required fields
+    if (!fullname || !employeeid || !mobileno || !password || !confirmPassword || !email || !gender || !address || !dateOfJoining) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
     // Check if the employee ID already exists
     const existingEmployee = await EmployeeInfo.findOne({ employeeid });
     if (!existingEmployee) {
@@ -147,9 +148,10 @@ app.post('/register', async (req, res) => {
       dateOfJoining: new Date(dateOfJoining),
       isAdmin, // Set admin based on condition
     });
-
+    
     await newUser.save();
     await sendConfirmationEmail(email, fullname);
+    
 
     res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
@@ -583,17 +585,17 @@ app.get('/admin-dashboard', authenticateToken, authenticateAdmin, async (req, re
 
 app.get('/leave-history', async (req, res) => {
   try {
-    // Step 1: Get all active employees
-    const activeEmployees = await UserInfo.find({ status: 'active', }).select('_id'); // Fetch only active employees
+    
+    const activeEmployees = await UserInfo.find({ status: 'active', }).select('_id'); 
 
-    // Step 2: Get leave applications for active employees
+    
     const leaveHistory = await LeaveApplication.find({
-      userId: { $in: activeEmployees.map(employee => employee._id) } // Only fetch leave records of active employees
+      userId: { $in: activeEmployees.map(employee => employee._id) }
     })
     .populate('userId', 'fullname employeeid email gender address') // Populate employee details
     .sort({ appliedDate: -1 });
 
-    // Step 3: Respond with filtered leave history
+    
     res.status(200).json(leaveHistory);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching leave history' });
@@ -959,7 +961,9 @@ app.put('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
 
 app.get('/team-leaders', async (req, res) => {
   try {
-    const teamLeaders = await EmployeeInfo.find({ role: 'TeamLeader' }, 'fullname employeeid');
+    const { department } = req.query;
+    
+    const teamLeaders = await EmployeeInfo.find({ role: 'TeamLeader',  department: department  }, 'fullname employeeid');
     res.json(teamLeaders);
   } catch (error) {
     console.error('Error fetching team leaders:', error);
@@ -969,26 +973,72 @@ app.get('/team-leaders', async (req, res) => {
 
 app.get('/leaves-history', async (req, res) => {
   try {
-    // Step 1: Get all active users
-    const activeUsers = await UserInfo.find({ status: "active" }); // Fetch only active users
+    
+    
+    const leaveHistory = await LeaveApplication.aggregate([
+      {
+        $lookup: {
+          from: "UserInfo", // Join LeaveApplication with UserInfo
+          localField: "userId", 
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userDetails",
+          preserveNullAndEmptyArrays: false // Only include matched employees
+        }
+      },
+      {
+        $lookup: {
+          from: "EmployeeInfo", // Join with EmployeeInfo to get role, department
+          localField: "userDetails.employeeid", 
+          foreignField: "employeeid",
+          as: "employeeDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$employeeDetails",
+          preserveNullAndEmptyArrays: true // Some users may not have EmployeeInfo data
+        }
+      },
+      {
+        $match: { 
+          "userDetails.status": "active" // Filter only active employees
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          appliedDate: 1,
+          leaveType: 1,
+          permissionType:1,
+          reason:1, 
+          startDate: 1,
+          endDate: 1,
+          status: 1,
+          totalDays: 1,
+          "userDetails.fullname": 1,
+          "userDetails.employeeid": 1,
+          "userDetails.email": 1,
+          "userDetails.gender": 1,
+          "userDetails.address": 1,
+          "employeeDetails.role": 1,
+          "employeeDetails.department": 1,
+          "employeeDetails.assignedTeamLeader": 1
+        }
+      },
+      {
+        $sort: { appliedDate: -1 } // Sort by latest applied date
+      }
+    ]);
 
-    // Step 2: Filter employees from EmployeeInfo with role as "Employee"
-    const employeeIds = await EmployeeInfo.find({ role: "Employee" }).select("_id");
-
-    // Step 3: Fetch Leave Applications for active employees
-    const leaveApplications = await LeaveApplication.find({
-      userId: { $in: activeUsers.map((user) => user._id) }, // Match active user IDs
-      employeeId: { $in: employeeIds.map((employee) => employee._id) }, // Match employees with role
-    })
-      .populate("userId", "fullname employeeid email gender") // Populate user details
-      .populate("employeeId", "department role") // Populate employee details
-      .sort({ appliedDate: -1 }); // Sort by applied date (latest first)
-
-    // Step 4: Send the leave history as a response
-    res.status(200).json(leaveApplications);
+    res.status(200).json(leaveHistory);
   } catch (error) {
     console.error("Error fetching leave history:", error);
-    res.status(500).json({ message: "Failed to fetch leave history", error });
+    res.status(500).json({ message: "Error fetching leave history" });
   }
 });
 

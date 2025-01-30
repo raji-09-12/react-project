@@ -15,8 +15,12 @@ function AddEmployee() {
   useEffect(() => {
     // Fetch team leaders from the backend
     const fetchTeamLeaders = async () => {
+      if (!department) {
+        setTeamLeaders([]); // Clear leaders if no department selected
+        return;
+      }
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}team-leaders`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}team-leaders?department=${department}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -28,7 +32,7 @@ function AddEmployee() {
     };
 
     fetchTeamLeaders();
-  }, []);
+  }, [department]);
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
