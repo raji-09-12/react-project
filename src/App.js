@@ -32,7 +32,7 @@ function App() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/apply-leave" element={<ApplyLeave />} />
-      <Route path="/view-leaves" element={<ViewLeaveApplications />} />
+      <Route path="/view-leave" element={<ViewLeaveApplications />} />
       <Route path="/edit-leave/:leaveId" element={<EditLeaveApplication />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/admin-profile" element={<AdminProfile />} />

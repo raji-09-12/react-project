@@ -134,8 +134,8 @@ const todayLeaveData = leaveHistory.filter((leave) => {
   return (
     todayNormalized >= leaveStartDate && 
     todayNormalized <= leaveEndDate &&
-    leave.status !== 'Rejected' &&    
-    leave.status !== 'Cancelled'  
+    leave.status === 'Approved'   
+     
   );
 });
 

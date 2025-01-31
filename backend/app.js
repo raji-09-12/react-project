@@ -71,8 +71,8 @@ const sendConfirmationEmail = async (userEmail, userFullName) => {
   }
 };
 app.use(cors({
-    origin: 'https://react-project-sepia-tau.vercel.app',
-    //origin: 'http://localhost:3000',// Frontend URL
+    //origin: 'https://react-project-sepia-tau.vercel.app',
+    origin: 'http://localhost:3000',// Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 }));
@@ -96,12 +96,13 @@ app.get('/', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
+
   
 
   try {
     const { fullname, employeeid, mobileno, password, confirmPassword, email, gender, address, dateOfJoining } = req.body;
 
-  // Validation for required fields
+  
     if (!fullname || !employeeid || !mobileno || !password || !confirmPassword || !email || !gender || !address || !dateOfJoining) {
       return res.status(400).json({ message: 'All fields are required' });
     }
@@ -113,13 +114,13 @@ app.post('/register', async (req, res) => {
     if (password.length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
     }
-    // Check if the employee ID already exists
+    
     const existingEmployee = await EmployeeInfo.findOne({ employeeid });
     if (!existingEmployee) {
       return res.status(400).json({ message: 'Invalid Employee ID ' });
     }
 
-    // Check if the employee ID already exists in UserInfo (to avoid duplicate registrations)
+   
     const existingUser = await UserInfo.findOne({ employeeid });
     if (existingUser) {
       return res.status(400).json({ message: 'Employee ID is already registered' });
@@ -129,24 +130,24 @@ app.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Email is already registered' });
     }
 
-    // Hash the password
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Define admin condition (Here, we assume only a specific employeeId can be admin)
-    const isAdmin = employeeid === "admin123";  // Example: Only employeeid "admin123" will be an admin
+   
+    const isAdmin = employeeid === "admin123";  
 
-    // Create new user
+   
     const newUser = new UserInfo({
       fullname,
       employeeid,
       mobileno,
       password: hashedPassword,
-      confirmPassword: hashedPassword, // Store hashed password
+      confirmPassword: hashedPassword,
       email,
       gender,
       address,
       dateOfJoining: new Date(dateOfJoining),
-      isAdmin, // Set admin based on condition
+      isAdmin, 
     });
     
     await newUser.save();
@@ -162,35 +163,35 @@ app.post('/register', async (req, res) => {
 
 
 app.post('/login', async (req, res) => {
+
+  try {
     const { employeeid, password } = req.body;
 
     if (!employeeid || !password) {
         return res.status(400).json({ message: 'Employee ID and password are required' });
     }
-
-    try {
-        // Find user by employee ID
-        const user = await UserInfo.findOne({ employeeid });
-        console.log('Entered password:', password);
-        console.log('Stored password:', user.password);
-        if (!user) {
-            return res.status(401).json({ message: 'Invalid Employee ID' });
-        }
-
-        // Compare passwords
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid  password' });
-        }
-
-        // Generate JWT token
-        const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin}, process.env.JWT_SECRET, { expiresIn: '10h' });
-
-        res.status(200).json({ message: 'Login successful', token });
-    } catch (error) {
-        console.error("Error during login:", error);
-        res.status(500).json({ message: 'Server error' });
+      // Find user by employee ID
+    const user = await UserInfo.findOne({ employeeid });
+    
+    if (!user) {
+        return res.status(401).json({ message: 'Invalid Employee ID' });
     }
+    console.log('Entered password:', password);
+    console.log('Stored password:', user.password);
+    // Compare passwords
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+        return res.status(401).json({ message: 'Invalid  password' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin}, process.env.JWT_SECRET, { expiresIn: '10h' });
+
+    res.status(200).json({ message: 'Login successful', token });
+  } catch (error) {
+      console.error("Error during login:", error);
+      res.status(500).json({ message: 'Server error' });
+  }
 });
  
 const authenticateToken = (req, res, next) => {
@@ -343,7 +344,7 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
 
 
 // GET route for viewing leave applications
-app.get('/view-leaves', authenticateToken, async (req, res) => {
+app.get('/view-leave', authenticateToken, async (req, res) => {
   try {
     
     const userId = req.user.id;
@@ -486,7 +487,7 @@ app.get('/dashboard-stats', authenticateToken, async (req, res) => {
     const totalLeave = await LeaveApplication.countDocuments({ userId, leaveType: 'Leave' });
     const totalPermission = await LeaveApplication.countDocuments({ userId, leaveType: 'Permission' });
 
-    // Count the Pending, Approved, and Rejected leaves
+    // Count the Pending, Approved, and Rejected leave
     const totalApproved = await LeaveApplication.countDocuments({userId, status: "Approved" });
     const totalRejected = await LeaveApplication.countDocuments({userId,status: "Rejected" });
     const totalPending = await LeaveApplication.countDocuments({userId, status: "Pending" });
@@ -822,7 +823,7 @@ app.get('/leave-history/:id', async (req, res) => {
     const activeEmployees = await UserInfo.find({ status: 'active' }).select('_id'); // Fetch only active employees
     const leaveHistory = await LeaveApplication.find({userId: { $in: activeEmployees.map(employee => employee._id) } }).populate("userId", "employeeid fullname");
     
-    // Count the number of leaves with each status
+    // Count the number of leave with each status
     const totalApproved = await LeaveApplication.countDocuments({ status: "Approved" });
     const totalRejected = await LeaveApplication.countDocuments({ status: "Rejected" });
     const totalPending = await LeaveApplication.countDocuments({ status: "Pending" });
@@ -971,7 +972,7 @@ app.get('/team-leaders', async (req, res) => {
   }
 });
 
-app.get('/leaves-history', async (req, res) => {
+app.get('/leader-view-leave-history', async (req, res) => {
   try {
     
     

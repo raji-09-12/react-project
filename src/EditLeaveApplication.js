@@ -84,7 +84,7 @@ const EditLeaveApplication = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       console.log(response.data);
-      navigate("/view-leaves"); // Redirect after successful update
+      navigate("/view-leave"); // Redirect after successful update
     } catch (error) {
       console.error("Error updating leave application:", error);
       setError("Failed to update leave application.");

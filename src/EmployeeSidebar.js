@@ -29,7 +29,7 @@ const Sidebar = ({ handleLogout, role }) => {
           </Link>
         </li>
         <li className="mb-4">
-          <Link to="/view-leaves" className="block py-2 px-4 hover:bg-blue-700 rounded">
+          <Link to="/view-leave" className="block py-2 px-4 hover:bg-blue-700 rounded">
             Leave History
           </Link>
         </li>

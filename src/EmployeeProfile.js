@@ -71,6 +71,9 @@ function EmployeeProfile() {
                   Role: <span className="text-gray-800 text-xl">{employee.role}</span>
                 </p>
                 <p className="text-xl font-bold text-gray-600 mb-4">
+                  Team Leader: <span className="text-gray-800 text-xl">{employee.assignedTeamLeader}</span>
+                </p>
+                <p className="text-xl font-bold text-gray-600 mb-4">
                   Mobile Number: <span className="text-gray-800 text-xl">{employee.mobileno}</span>
                 </p>
                 <p className="text-xl font-bold text-gray-600 mb-4">

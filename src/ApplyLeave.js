@@ -15,7 +15,7 @@ function LeaveApplication() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [totalDays, setTotalDays] = useState(0);
-  const [existingLeaves, setExistingLeaves] = useState([]);
+  const [existingLeave, setExistingLeave] = useState([]);
   const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -31,7 +31,7 @@ function LeaveApplication() {
   }, [navigate]);
   
   useEffect(() => {
-    const fetchExistingLeaves = async () => {
+    const fetchExistingLeave = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
         setError('Unauthorized! Please log in again.');
@@ -39,13 +39,13 @@ function LeaveApplication() {
       }
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}view-leaves`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}view-leave`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
         if (Array.isArray(response.data.data)) {
-          setExistingLeaves(response.data.data);
+          setExistingLeave(response.data.data);
         }
       } catch (error) {
         console.error('Error fetching existing leave applications:', error);
@@ -53,7 +53,7 @@ function LeaveApplication() {
       }
     };
 
-    fetchExistingLeaves();
+    fetchExistingLeave();
   }, []);
 
 
@@ -78,7 +78,7 @@ function LeaveApplication() {
     return;
   }
 
-    const isDateTaken = existingLeaves.some((leave) => {
+    const isDateTaken = existingLeave.some((leave) => {
       if (leave.status?.toLowerCase() === 'rejected' || leave.status?.toLowerCase() === 'cancelled') {
         return false;
       }
@@ -111,7 +111,7 @@ function LeaveApplication() {
         },
       });
       if (response.status === 201) {
-        navigate('/view-leaves'); // Redirect to employee list page after success
+        navigate('/view-leave'); // Redirect to employee list page after success
       }
       alert('Submitting application');
       setMessage(response.data.message);

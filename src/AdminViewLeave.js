@@ -69,7 +69,7 @@ function AdminViewLeave() {
       endDate: addDays(new Date(), 7),
       key: 'selection',
     }]); // Reset the date range to the default range
-    console.log("Applied Dates for Leaves:");
+    console.log("Applied Dates for Leave:");
     leaveHistory.forEach((leave) => {
       console.log({
         employeeId: leave.userId?.employeeid || "N/A",

@@ -6,11 +6,7 @@ const LeaveApplicationSchema = new mongoose.Schema({
     ref: "UserInfo",
     required: true,
   },
-  employeeId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "EmployeeInfo", 
-    required: true,
-  },
+  
   leaveType: { type: String, required: true },
   leaveDuration: { type: String },
   permissionType: { type: String },

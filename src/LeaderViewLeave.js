@@ -46,33 +46,33 @@ function LeaderViewLeave() {
       
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}leaves-history`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}leader-view-leave-history`, {
           
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
-        const allLeaves = response.data;
+        const allLeave = response.data;
       const leaderDepartment = userData?.department || "";
       const userRole = userData?.role || ""; 
 
-      let departmentLeaves = [];
+      let departmentLeave = [];
 
       
       if (userRole === "TeamLeader") {
         
-        departmentLeaves = allLeaves.filter(
+        departmentLeave = allLeave.filter(
           (leave) => leave?.employeeDetails?.department === leaderDepartment && leave?.employeeDetails?.role === "Employee"
         );
       
       }else if (userRole === "Department Leader") {
         
-        departmentLeaves = allLeaves.filter(
+        departmentLeave = allLeave.filter(
           (leave) => 
             leave?.employeeDetails?.department === leaderDepartment && 
             leave?.employeeDetails?.role !== "Department Leader"
         );
       }
 
-      setLeaveHistory(departmentLeaves);
+      setLeaveHistory(departmentLeave);
       } catch (error) {
         setError('Error fetching leave history');
       } finally {
@@ -94,7 +94,7 @@ function LeaderViewLeave() {
       endDate: addDays(new Date(), 7),
       key: 'selection',
     }]); // Reset the date range to the default range
-    console.log("Applied Dates for Leaves:");
+    console.log("Applied Dates for Leave:");
     leaveHistory
     .forEach((leave) => {
       console.log({

@@ -222,10 +222,9 @@ const totalPermissionDays = leaveHistory.reduce((total, leave) => {
                 <p className="text-xl font-bold text-gray-600 mb-4">Cancelled </p><span className="text-gray-800 text-5xl">{totals.totalCancelledPermission}</span>
               </div>
             </div>
-          </div>
-
-          
+          </div>          
         </div>
+        
         
 
         </div>

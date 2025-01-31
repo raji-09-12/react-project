@@ -38,19 +38,31 @@ function AdminEditEmployee() {
       .get(`${process.env.REACT_APP_API_URL}admin-edit-employee/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
-      .then((response) => setEmployee(response.data))
+      .then((response) =>{
+        console.log("Employee Data:", response.data);
+        setEmployee(response.data);
+      })
       .catch((err) => {
         console.error('Error fetching:', err);
         setError('Error fetching employee details')
       });
       // Fetch team leaders
-      axios
-      .get(`${process.env.REACT_APP_API_URL}team-leaders`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
-      .then((response) => setTeamLeaders(response.data))
-      .catch((err) => console.error('Error fetching team leaders:', err));
+      
   }, [id]);
+
+  useEffect(() => {
+    if (employee.department) {
+      axios
+        .get(`${process.env.REACT_APP_API_URL}team-leaders?department=${employee.department}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((response) => {
+          console.log("Fetched Team Leaders:", response.data);
+          setTeamLeaders(response.data);
+        })
+        .catch((err) => console.error("Error fetching team leaders:", err));
+    }
+  }, [employee.department]); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;

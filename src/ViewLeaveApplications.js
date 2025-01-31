@@ -14,7 +14,7 @@ import 'react-date-range/dist/theme/default.css'; // Theme CSS file
 
 const ViewLeaveApplications = () => {
     const { userData } = useContext(UserContext);
-    const [leaves, setLeaves] = useState([]);
+    const [leave, setLeave] = useState([]);
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const [dateRange, setDateRange] = useState([
@@ -40,20 +40,20 @@ const ViewLeaveApplications = () => {
     
 
     useEffect(() => {
-        const fetchLeaves = async () => {
+        const fetchLeave = async () => {
             const token = localStorage.getItem('token');
             if (!token) {
                 setError("User not logged in.");
                 return;
             }
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}view-leaves`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}view-leave`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
                 if (Array.isArray(response.data.data)) {
-                    setLeaves(response.data.data);
+                    setLeave(response.data.data);
                 } else {
                     console.error("Expected an array of leave applications");
                 }
@@ -63,7 +63,7 @@ const ViewLeaveApplications = () => {
             }
         };
 
-        fetchLeaves();
+        fetchLeave();
     }, []);
 
     const isDefaultDateRange = () => {
@@ -79,7 +79,7 @@ const ViewLeaveApplications = () => {
 
     const normalizeDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-const filteredLeaves = leaves.filter((leave) => {
+const filteredLeave = leave.filter((leave) => {
   const leaveStartDate = normalizeDate(new Date(leave.startDate)); // Normalize the leave's startDate
   const leaveEndDate = normalizeDate(new Date(leave.endDate || leave.startDate)); // Handle single-day leave
   const startDate = normalizeDate(dateRange[0].startDate); // Normalize the range start date
@@ -93,7 +93,7 @@ const filteredLeaves = leaves.filter((leave) => {
 });
 
 
-    const displayLeaves = isDefaultDateRange() ? leaves : filteredLeaves;
+    const displayLeave = isDefaultDateRange() ? leave : filteredLeave;
 
     
 
@@ -118,7 +118,7 @@ const filteredLeaves = leaves.filter((leave) => {
             });
     
             // Update the leave's status in the state
-            setLeaves(leaves.map((leave) =>
+            setLeave(leave.map((leave) =>
                 leave._id === leaveId ? { ...leave, status: 'Cancelled' } : leave
             ));
     
@@ -167,7 +167,7 @@ const filteredLeaves = leaves.filter((leave) => {
                     {error && <p className="text-sm text-red-500 text-center mb-4">{error}</p>}
 
                     {/* Leave Applications Table */}
-                    {displayLeaves.length > 0 ? (
+                    {displayLeave.length > 0 ? (
                         <table className="w-full border-collapse border border-gray-400">
                             <thead>
                                 <tr className="bg-gray-200">
@@ -185,7 +185,7 @@ const filteredLeaves = leaves.filter((leave) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {displayLeaves.map((leave) => (
+                                {displayLeave.map((leave) => (
                                     <tr key={leave._id} className="hover:bg-gray-100">
                                         <td className="border border-gray-400 px-4 py-2">{leave.leaveType}</td>
                                         <td className="border border-gray-400 px-4 py-2">{leave.reason}</td>
