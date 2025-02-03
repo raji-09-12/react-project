@@ -976,7 +976,7 @@ app.get('/leader-view-leave-history', async (req, res) => {
   try {
     
     
-    const leaveHistory = await LeaveApplication.aggregate([
+    const empleaveHistory = await LeaveApplication.aggregate([
       {
         $lookup: {
           from: "UserInfo", // Join LeaveApplication with UserInfo
@@ -1036,7 +1036,7 @@ app.get('/leader-view-leave-history', async (req, res) => {
       }
     ]);
 
-    res.status(200).json(leaveHistory);
+    res.status(200).json(empleaveHistory);
   } catch (error) {
     console.error("Error fetching leave history:", error);
     res.status(500).json({ message: "Error fetching leave history" });

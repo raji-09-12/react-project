@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { UserContext } from './UserContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from './EmployeeSidebar';
 
 function Dashboard() {
+  const { userData } = useContext(UserContext);
   const navigate = useNavigate();
+  const [empleaveHistory, setempLeaveHistory] = useState([]);
   const [leaveHistory, setLeaveHistory] = useState([]);
-  const [userData, setUserData] = useState(null);
+  const [userDataa, setUserDataa] = useState(null);
   const [totalLeave, setTotalLeave] = useState(0);
   const [totalPermission, setTotalPermission] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -30,6 +33,47 @@ function Dashboard() {
     // Redirect the user to the login page
     navigate('/login');  // Adjust the route for your login page
   };
+
+  useEffect(() => {
+    const fetchempLeaveHistory = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}leader-view-leave-history`, {
+          
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        const allLeave = response.data;
+      const leaderDepartment = userData?.department || "";
+      const userRole = userData?.role || ""; 
+
+      let departmentLeave = [];
+
+      
+      if (userRole === "TeamLeader") {
+        
+        departmentLeave = allLeave.filter(
+          (leave) => leave?.employeeDetails?.department === leaderDepartment && leave?.employeeDetails?.role === "Employee"
+        );
+      
+      }else if (userRole === "Department Leader") {
+        
+        departmentLeave = allLeave.filter(
+          (leave) => 
+            leave?.employeeDetails?.department === leaderDepartment && 
+            leave?.employeeDetails?.role !== "Department Leader"
+        );
+      }
+
+      setempLeaveHistory(departmentLeave);
+      } catch (error) {
+        setError('Error fetching leave history');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchempLeaveHistory();
+  }, [userData]);
+
   useEffect(() => {
     // Get the token from localStorage
     const token = localStorage.getItem('token');
@@ -46,7 +90,7 @@ function Dashboard() {
       }
     })
     .then(response => {
-      setUserData(response.data); // Assuming response contains user profile
+      setUserDataa(response.data); // Assuming response contains user profile
 
       // Prepopulate editable fields with existing data
       
@@ -154,19 +198,106 @@ const totalPermissionDays = leaveHistory.reduce((total, leave) => {
   return total;
 }, 0);
 
+const displayempLeaveHistory = empleaveHistory.filter(leave => leave.status === 'Pending');
+
+const handleApprove = async (id) => {
+  const confirmApproval = window.confirm("Are you sure you want to approve this leave?");
+  if (confirmApproval) {
+  try {
+    const response = await axios.put(
+      `${process.env.REACT_APP_API_URL}approve-leave/${id}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      }
+    );
+
+    if (response.status === 200) {
+      setempLeaveHistory((prevState) =>
+        prevState.map((leave) =>
+          leave._id === id ? { ...leave, status: 'approved' } : leave
+        )
+      );
+      alert('Leave approved successfully.');
+    } else {
+      alert('Failed to approve leave.');
+    }
+  } catch (error) {
+    alert('Error approving leave. Please try again.');
+  }
+ }
+};
+
+const handleReject = async (id) => {
+  const confirmRejection = window.confirm("Are you sure you want to reject this leave?");
+  if (confirmRejection) {
+  try {
+    const response = await axios.put(
+      `${process.env.REACT_APP_API_URL}reject-leave/${id}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      }
+    );
+    
+
+    if (response.status === 200) {
+      setempLeaveHistory((prevState) =>
+        prevState.map((leave) =>
+          leave._id === id ? { ...leave, status: 'rejected' } : leave
+        )
+      );
+      alert('Leave rejected successfully.');
+    } else {
+      alert('Failed to reject leave.');
+    }
+  } catch (error) {
+    alert('Error rejecting leave. Please try again.');
+  }
+ }
+};
+
+const handleCancel = async (leaveId) => {
+  const confirmCancel = window.confirm('Are you sure you want to cancel this leave?');
+  if (!confirmCancel) {
+      return; // Exit if the user does not confirm
+  }
+  const token = localStorage.getItem('token');
+  if (!token) {
+      setError("User not logged in.");
+      return;
+  }
+
+  try {
+      await axios.put(`${process.env.REACT_APP_API_URL}cancel-leave/${leaveId}`, null, {
+          headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Update the leave's status in the state
+      setempLeaveHistory(leaveHistory.map((leave) =>
+          leave._id === leaveId ? { ...leave, status: 'Cancelled' } : leave
+      ));
+
+      setError(''); // Clear any previous errors
+  } catch (error) {
+      console.error("Error cancelling leave:", error);
+      setError("Failed to cancel leave.");
+  }
+};
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-
+ 
   
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <Sidebar handleLogout={handleLogout} role={userData.role} />
+      <Sidebar handleLogout={handleLogout} role={userData?.role} />
 
       {/* Main Content */}
       <div className="ml-64 p-14 w-full">
-        <h2 className="text-5xl text-center font-bold mb-4">Welcome  {userData.fullname} </h2>
+        <h2 className="text-5xl text-center font-bold mb-4">Welcome  {userDataa.fullname} </h2>
         
 
        
@@ -224,7 +355,69 @@ const totalPermissionDays = leaveHistory.reduce((total, leave) => {
             </div>
           </div>          
         </div>
-        
+        <div className="w-full bg-white p-6 shadow-lg rounded-lg mt-6">
+          <h2 className="text-2xl font-bold text-left mb-4">Pending Leave Request
+          </h2>
+          {displayempLeaveHistory.length > 0 ? (
+          <table>
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border border-gray-400 px-4 py-2">Employee ID</th>
+                <th className="border border-gray-400 px-4 py-2">Employee Name</th>
+                <th className="border border-gray-400 px-4 py-2">Role</th>
+                <th className="border border-gray-400 px-4 py-2">Leave Type</th>
+                <th className="border border-gray-400 px-4 py-2">Reason</th>
+                <th className="border border-gray-400 px-4 py-2">Start Date</th>
+                <th className="border border-gray-400 px-4 py-2">End Date</th>
+                <th className="border border-gray-400 px-4 py-2">Total Leave & Permission</th>
+                <th className="border border-gray-400 px-4 py-2">Status</th>
+                <th className="border border-gray-400 px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayempLeaveHistory.map((leave) => (
+                <tr key={leave._id}>
+                  <td className="border border-gray-400 px-4 py-2">{leave?.userDetails?.employeeid}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave?.userDetails?.fullname}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave?.employeeDetails?.role}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.leaveType}-{leave.permissionType} </td>
+                  <td className="border border-gray-400 px-4 py-2">{leave?.reason}</td>
+                  <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
+                  <td className="border border-gray-400 px-4 py-2">
+                  <span
+                    className={`px-2 py-1 rounded ${
+                        leave.status === 'Approved'
+                            ? 'bg-green-500 text-white'
+                            : leave.status === 'Rejected'
+                            ? 'bg-red-500 text-white'
+                            : leave.status === 'Cancelled'
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-yellow-500 text-white'
+                    }`}
+                >
+                    {leave.status}
+                </span>
+                  </td>
+                  <td className="border border-gray-400 px-4 py-2">
+                    <div className="flex space-x-4">
+                    {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
+                      <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" onClick={() => handleApprove(leave._id)}>Approve</button>)}
+                      {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
+                      <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onClick={() => handleReject(leave._id)}>Reject</button>)}
+                      {leave.status === 'Approved' && new Date(leave.endDate) && new Date(leave.startDate)>= new Date() && (
+                      <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={() => handleCancel(leave._id)}>Cancel</button>)}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          ) : (
+            <p>No pending leave requests.</p>
+          )}
+          </div>
         
 
         </div>
