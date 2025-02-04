@@ -355,6 +355,7 @@ const handleCancel = async (leaveId) => {
             </div>
           </div>          
         </div>
+        {userData?.role !== "Employee" && (  
         <div className="w-full bg-white p-6 shadow-lg rounded-lg mt-6">
           <h2 className="text-2xl font-bold text-left mb-4">Pending Leave Request
           </h2>
@@ -418,7 +419,7 @@ const handleCancel = async (leaveId) => {
             <p>No pending leave requests.</p>
           )}
           </div>
-        
+        )}
 
         </div>
       </div>

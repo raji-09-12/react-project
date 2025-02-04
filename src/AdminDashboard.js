@@ -164,6 +164,8 @@ const todayLeaveData = leaveHistory.filter((leave) => {
   ).length || 0;
 
   const handleApprove = async (id) => {
+    const confirmApproval = window.confirm("Are you sure you want to approve this leave?");
+    if(confirmApproval){
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}approve-leave/${id}`,
@@ -186,9 +188,12 @@ const todayLeaveData = leaveHistory.filter((leave) => {
     } catch (error) {
       alert('Error approving leave. Please try again.');
     }
+  }
   };
 
   const handleReject = async (id) => {
+    const confirmRejection = prompt("Are you sure you want to reject this leave?");
+    if(confirmRejection){
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}reject-leave/${id}`,
@@ -211,6 +216,7 @@ const todayLeaveData = leaveHistory.filter((leave) => {
     } catch (error) {
       alert('Error rejecting leave. Please try again.');
     }
+  }
   };
   
   if (loading) return <div>Loading...</div>;
