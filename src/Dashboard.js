@@ -229,12 +229,15 @@ const handleApprove = async (id) => {
 };
 
 const handleReject = async (id) => {
-  const confirmRejection = window.confirm("Are you sure you want to reject this leave?");
-  if (confirmRejection) {
+  const statusReason = prompt("Enter the Rejection Reason!");
+  if(!statusReason){
+    alert("Reject reason is required!");
+    return;
+  } 
   try {
     const response = await axios.put(
       `${process.env.REACT_APP_API_URL}reject-leave/${id}`,
-      {},
+      {reason: statusReason},
       {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       }
@@ -244,7 +247,7 @@ const handleReject = async (id) => {
     if (response.status === 200) {
       setempLeaveHistory((prevState) =>
         prevState.map((leave) =>
-          leave._id === id ? { ...leave, status: 'rejected' } : leave
+          leave._id === id ? { ...leave, status: 'rejected', statusReason } : leave
         )
       );
       alert('Leave rejected successfully.');
@@ -254,13 +257,14 @@ const handleReject = async (id) => {
   } catch (error) {
     alert('Error rejecting leave. Please try again.');
   }
- }
+ 
 };
 
 const handleCancel = async (leaveId) => {
-  const confirmCancel = window.confirm('Are you sure you want to cancel this leave?');
-  if (!confirmCancel) {
-      return; // Exit if the user does not confirm
+  const statusReason = window.prompt("Enter the Cancelled Reason!")
+  if (!statusReason) {
+      alert("Cancelled Reason is required!")
+      return;
   }
   const token = localStorage.getItem('token');
   if (!token) {
@@ -269,13 +273,13 @@ const handleCancel = async (leaveId) => {
   }
 
   try {
-      await axios.put(`${process.env.REACT_APP_API_URL}cancel-leave/${leaveId}`, null, {
+      await axios.put(`${process.env.REACT_APP_API_URL}cancel-leave/${leaveId}`, {reason: statusReason}, {
           headers: { Authorization: `Bearer ${token}` },
       });
 
       // Update the leave's status in the state
       setempLeaveHistory(leaveHistory.map((leave) =>
-          leave._id === leaveId ? { ...leave, status: 'Cancelled' } : leave
+          leave._id === leaveId ? { ...leave, status: 'Cancelled', statusReason } : leave
       ));
 
       setError(''); // Clear any previous errors

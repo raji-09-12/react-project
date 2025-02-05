@@ -192,8 +192,11 @@ const todayLeaveData = leaveHistory.filter((leave) => {
   };
 
   const handleReject = async (id) => {
-    const confirmRejection = prompt("Are you sure you want to reject this leave?");
-    if(confirmRejection){
+    const statusReason = prompt("Are you sure you want to reject this leave?");
+    if(!statusReason){
+      alert("Reject reason is required!");
+      return;
+    }
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}reject-leave/${id}`,
@@ -206,17 +209,17 @@ const todayLeaveData = leaveHistory.filter((leave) => {
       if (response.status === 200) {
         setLeaveHistory((prevState) =>
           prevState.map((leave) =>
-            leave._id === id ? { ...leave, status: 'rejected' } : leave
+            leave._id === id ? { ...leave, status: 'rejected', statusReason  } : leave
           )
         );
-        alert('Leave rejected successfully.');
+        alert(`Leave rejected successfully.\nReason: ${statusReason}`);
       } else {
         alert('Failed to reject leave.');
       }
     } catch (error) {
       alert('Error rejecting leave. Please try again.');
     }
-  }
+  
   };
   
   if (loading) return <div>Loading...</div>;

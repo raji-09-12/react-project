@@ -48,17 +48,17 @@ app.use('/uploads', express.static('uploads'));
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'plestarrajeshwari01@gmail.com',  // Your admin email address
-    pass: 'Plestar@7542',  // Your email password or an app-specific password if you have 2FA enabled
+    user: 'plestarrajeshwari01@gmail.com',  
+    pass: 'ypkm fqjf ysib hunl',  
   },
 });
 
 
 // Function to send email
-const sendConfirmationEmail = async (userEmail, userFullName) => {
+const sendConfirmationEmail = async ( userFullName) => {
   const mailOptions = {
     from: 'plestarrajeshwari01@gmail.com',
-    to: userEmail,
+    to: 'rajeshwaribala0912@gmail.com',
     subject: 'Thank You for Registering!',
     text: `Dear ${userFullName},\n\nThank you for registering with us! Your account has been successfully created.\n\nBest Regards,\nThe Admin Team`,
   };
@@ -309,17 +309,17 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
     const calculateTotalDays = (leaveType, leaveDuration, startDate, endDate) => {
       if (leaveType === "Leave") {
         if (leaveDuration === "Half Day") {
-          return 0.5; // Half-day leave
+          return 0.5;
         } else if (startDate && endDate) {
           return Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1;
         }
       } else if (leaveType === "Permission") {
-        return 1; // Fixed value for permissions
+        return 1; 
       }
-      return 0; // Default value if leaveType is invalid
+      return 0; 
     };
 
-    // Calculate total days
+    
     const totalDays = calculateTotalDays(leaveType, leaveDuration, startDate, endDate);
 
 
@@ -335,6 +335,14 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
     });
 
     await newLeave.save();
+    
+      await sendConfirmationEmail(leaveType);
+        // Admin email from .env file
+        
+       
+      
+    
+    
     res.status(201).json({ message: "Leave application submitted successfully", data: newLeave });
   } catch (error) {
     console.error('Error applying for leave:', error);
@@ -756,11 +764,11 @@ app.put('/edit-employee/:id', async (req, res) => {
 
 app.put('/approve-leave/:id', async (req, res) => {
   const leaveId = req.params.id;
-
+  
   try {
     const leave = await LeaveApplication.findByIdAndUpdate(
       leaveId,
-      { status: 'Approved' },
+      { status: 'Approved'},
       { new: true }
     );
 
@@ -778,11 +786,12 @@ app.put('/approve-leave/:id', async (req, res) => {
 // Reject leave route
 app.put('/reject-leave/:id', async (req, res) => {
   const leaveId = req.params.id;
+  const { reason } = req.body;
 
   try {
     const leave = await LeaveApplication.findByIdAndUpdate(
       leaveId,
-      { status: 'Rejected' },
+      { status: 'Rejected', statusReason: reason  },
       { new: true }
     );
 
@@ -799,10 +808,11 @@ app.put('/reject-leave/:id', async (req, res) => {
 
 app.put('/cancel-leave/:leaveId', async (req, res) => {
   const { leaveId } = req.params;
+  const{ reason } = req.body;
   try {
       const leave = await LeaveApplication.findByIdAndUpdate(
           leaveId,
-          { status: 'Cancelled' },
+          { status: 'Cancelled', statusReason: reason },
           { new: true }
       );
       if (!leave) {

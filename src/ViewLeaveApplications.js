@@ -102,9 +102,10 @@ const filteredLeave = leave.filter((leave) => {
     };
 
     const handleCancel = async (leaveId) => {
-        const confirmCancel = window.confirm('Are you sure you want to cancel this leave?');
-        if (!confirmCancel) {
-            return; // Exit if the user does not confirm
+        const statusReason = window.prompt("Enter the Cancelled Reason!")
+        if (!statusReason) {
+            alert("Cancelled Reason is required!")
+            return;
         }
         const token = localStorage.getItem('token');
         if (!token) {
@@ -113,13 +114,13 @@ const filteredLeave = leave.filter((leave) => {
         }
     
         try {
-            await axios.put(`${process.env.REACT_APP_API_URL}cancel-leave/${leaveId}`, null, {
+            await axios.put(`${process.env.REACT_APP_API_URL}cancel-leave/${leaveId}`, {reason: statusReason}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
     
             // Update the leave's status in the state
             setLeave(leave.map((leave) =>
-                leave._id === leaveId ? { ...leave, status: 'Cancelled' } : leave
+                leave._id === leaveId ? { ...leave, status: 'Cancelled',statusReason } : leave
             ));
     
             setError(''); // Clear any previous errors
@@ -175,6 +176,7 @@ const filteredLeave = leave.filter((leave) => {
                                     <th className="border border-gray-400 px-4 py-2">Reason</th>
                                     <th className="border border-gray-400 px-4 py-2">Session</th>
                                     <th className="border border-gray-400 px-4 py-2">Status</th>
+                                    <th className="border border-gray-400 px-4 py-2">Status Reason</th>
                                     <th className="border border-gray-400 px-4 py-2">Start Date</th>
                                     <th className="border border-gray-400 px-4 py-2">End Date</th>
                                     <th className="border border-gray-400 px-4 py-2">Total Leave</th>
@@ -205,6 +207,7 @@ const filteredLeave = leave.filter((leave) => {
                                                 {leave.status}
                                             </span>
                                         </td>
+                                        <td className="border border-gray-400 px-4 py-2">{leave.statusReason}</td>
                                         <td className="border border-gray-400 px-4 py-2">
                                             {leave.startDate ? new Date(leave.startDate).toLocaleDateString() : 'N/A'}
                                         </td>
