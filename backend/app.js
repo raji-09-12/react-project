@@ -55,10 +55,10 @@ const transporter = nodemailer.createTransport({
 
 
 // Function to send email
-const sendConfirmationEmail = async ( userFullName) => {
+const sendConfirmationEmail = async ( userFullName, userEmail) => {
   const mailOptions = {
-    from: 'plestarrajeshwari01@gmail.com',
-    to: 'rajeshwaribala0912@gmail.com',
+    from: 'rajibalaeshwari@gmail.com',
+    to: userEmail,
     subject: 'Thank You for Registering!',
     text: `Dear ${userFullName},\n\nThank you for registering with us! Your account has been successfully created.\n\nBest Regards,\nThe Admin Team`,
   };
@@ -138,6 +138,7 @@ app.post('/register', async (req, res) => {
 
    
     const newUser = new UserInfo({
+      employeeInfoId: existingEmployee._id,
       fullname,
       employeeid,
       mobileno,
@@ -318,8 +319,14 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
       }
       return 0; 
     };
-
-    
+    const user = await UserInfo.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const employeeInfo = await EmployeeInfo.findOne({ employeeid: user.employeeid });
+    if (!employeeInfo) {
+      return res.status(404).json({ message: "Employee information not found" });
+    }
     const totalDays = calculateTotalDays(leaveType, leaveDuration, startDate, endDate);
 
 
@@ -332,12 +339,29 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
       endDate: leaveType === "Leave" ? endDate : null,
       reason,
       totalDays,
+      fullname: user.fullname,
+      department: employeeInfo.department,
+      
     });
-
+    //await sendConfirmationEmail(user.fullname, user.email);
     await newLeave.save();
     
-      await sendConfirmationEmail(leaveType);
-        // Admin email from .env file
+    const teamLeaders = await EmployeeInfo.find({ 
+      role: "TeamLeader", 
+      department: employeeInfo.department 
+    });
+    const departmentLeaders = await EmployeeInfo.find({ 
+      role: "Department Leader", 
+      department: employeeInfo.department 
+    });
+
+    // Send leave application emails to TeamLeader(s) and Department Leader(s)
+    const recipients = [...teamLeaders, ...departmentLeaders];
+    recipients.forEach((leader) => {
+      sendConfirmationEmail(leader.fullname, leader.email);  // Send to each leader
+    });
+      
+        
         
        
       

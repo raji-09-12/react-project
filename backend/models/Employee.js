@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 
 // Define schema for employee data
 const employeeSchema = new mongoose.Schema({
-  
+  employeeInfoId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'EmployeeInfo', 
+    required: true
+  },
   fullname: {
     type: String,
     required: true
