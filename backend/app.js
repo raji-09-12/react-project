@@ -55,12 +55,27 @@ const transporter = nodemailer.createTransport({
 
 
 // Function to send email
-const sendConfirmationEmail = async ( userFullName, userEmail) => {
+const sendConfirmationEmail = async ( userFullName, userEmail, leaveData, employeeName, department, role, dashboardLink) => {
+  const { leaveType, startDate, endDate, reason, leaveDuration, permissionType, halfDayOption } = leaveData;
+  let leaveDetails = `Leave Type: ${leaveType}\nStart Date: ${startDate}\nReason: ${reason}`;
+  
+  if (endDate) leaveDetails += `\nEnd Date: ${endDate}`;
+  if (leaveDuration) leaveDetails += `\nLeave Duration: ${leaveDuration}`;
+  if (permissionType) leaveDetails += `\nPermission Type: ${permissionType}`;
+  if (halfDayOption) leaveDetails += `\nHalf Day Option: ${halfDayOption}`;
+  
+
   const mailOptions = {
     from: 'rajibalaeshwari@gmail.com',
     to: userEmail,
     subject: 'Thank You for Registering!',
-    text: `Dear ${userFullName},\n\nThank you for registering with us! Your account has been successfully created.\n\nBest Regards,\nThe Admin Team`,
+    text: `Dear ${userFullName},\n\nAn employee has applied for leave.\n\n` +
+          `Employee Name: ${employeeName}\n` +
+          `Department: ${department}\n` +
+          `Role: ${role}\n\n` +
+          `You can view more details ${dashboardLink}\n\n` +
+          `${leaveDetails}\n\nBest Regards,\nHR Team`,
+   
   };
 
   try {
@@ -152,7 +167,7 @@ app.post('/register', async (req, res) => {
     });
     
     await newUser.save();
-    await sendConfirmationEmail(email, fullname);
+   // await sendConfirmationEmail(email, fullname);
     
 
     res.status(201).json({ message: 'User registered successfully', user: newUser });
@@ -343,30 +358,70 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
       department: employeeInfo.department,
       
     });
-    //await sendConfirmationEmail(user.fullname, user.email);
     await newLeave.save();
-    
-    const teamLeaders = await EmployeeInfo.find({ 
-      role: "TeamLeader", 
-      department: employeeInfo.department 
-    });
-    const departmentLeaders = await EmployeeInfo.find({ 
-      role: "Department Leader", 
-      department: employeeInfo.department 
-    });
+    const additionalEmail = "rajibalaeshwari@gmail.com";
+    let recipients = [];
 
-    // Send leave application emails to TeamLeader(s) and Department Leader(s)
-    const recipients = [...teamLeaders, ...departmentLeaders];
-    recipients.forEach((leader) => {
-      sendConfirmationEmail(leader.fullname, leader.email);  // Send to each leader
-    });
-      
-        
-        
-       
-      
+    if (employeeInfo.role === "Employee") {
+      const teamLeaders = await EmployeeInfo.find(
+        { role: "TeamLeader", department: employeeInfo.department },
+        { employeeid: 1, fullname: 1 }
+      );
+
+      const departmentLeaders = await EmployeeInfo.find(
+        { role: "Department Leader", department: employeeInfo.department },
+        { employeeid: 1, fullname: 1 }
+      );
+
+      recipients = [...teamLeaders, ...departmentLeaders];  
+    } else if (employeeInfo.role === "TeamLeader") {
+      const departmentLeaders = await EmployeeInfo.find(
+        { role: "Department Leader", department: employeeInfo.department },
+        { employeeid: 1, fullname: 1 }
+      );
+      recipients = [...departmentLeaders];
+    } else if (employeeInfo.role === "Department Leader") {
+      recipients = [];
+    }
+    recipients.push({ fullname: "Admin", email: additionalEmail });
+    const recipientEmails = await Promise.all(
+      recipients.map(async (leader) => {
+        if (leader.email) {
+          return { fullname: leader.fullname, email: leader.email };
+        }
+        const user = await UserInfo.findOne({ employeeid: leader.employeeid }, { email: 1 });
+        return user ? { fullname: leader.fullname, email: user.email } : null;
+      })
+    );
     
     
+    const validRecipients = recipientEmails.filter(recipient => recipient !== null);
+    console.log("Emails to Send:", validRecipients);
+
+    if (validRecipients.length > 0) {
+      const leaveData = req.body; 
+      console.log("Leave Data:", leaveData);
+
+      if (!leaveData) {
+        console.error("❌ Error: Leave data is undefined!");
+        return res.status(400).json({ error: "Leave data is required." });
+      }
+      const employeeName = user.fullname;
+      const department = employeeInfo.department;
+      const role = employeeInfo.role;
+      await Promise.all(
+        validRecipients.map(async (recipient) => {
+          const dashboardLink = recipient.email === additionalEmail  
+            ? 'https://react-project-sepia-tau.vercel.app/admin-dashboard' 
+            : 'https://react-project-sepia-tau.vercel.app/dashboard';
+          await sendConfirmationEmail(recipient.fullname, recipient.email, leaveData, employeeName, department, role, dashboardLink); 
+        })
+      );
+    } else {
+      console.log("❌ No valid email recipients found.");
+    }
+    //await newLeave.save();
+          
     res.status(201).json({ message: "Leave application submitted successfully", data: newLeave });
   } catch (error) {
     console.error('Error applying for leave:', error);
