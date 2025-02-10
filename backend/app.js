@@ -370,6 +370,7 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
 
       const departmentLeaders = await EmployeeInfo.find(
         { role: "Department Leader", department: employeeInfo.department },
+        { employeeid: employeeInfo.assignedTeamLeader },
         { employeeid: 1, fullname: 1 }
       );
 
