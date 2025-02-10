@@ -130,9 +130,9 @@ function Login() {
                         {/* Login button */}
                         <button 
                             type="submit" 
-                            disabled={isSubmitting || !termsAccepted}
+                            disabled={isSubmitting }
                             className={`w-full py-2 text-white rounded-lg ${
-                                isSubmitting || !termsAccepted
+                                isSubmitting 
                                     ? 'bg-gray-400 cursor-not-allowed'
                                     : 'bg-blue-500 hover:bg-blue-600'
                             }`}

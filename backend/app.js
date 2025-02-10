@@ -68,7 +68,7 @@ const sendConfirmationEmail = async ( userFullName, userEmail, leaveData, employ
   const mailOptions = {
     from: 'rajibalaeshwari@gmail.com',
     to: userEmail,
-    subject: 'Thank You for Registering!',
+    subject: 'Employee Leave Request',
     text: `Dear ${userFullName},\n\nAn employee has applied for leave.\n\n` +
           `Employee Name: ${employeeName}\n` +
           `Department: ${department}\n` +
@@ -85,6 +85,22 @@ const sendConfirmationEmail = async ( userFullName, userEmail, leaveData, employ
     console.error('Error sending confirmation email:', error);
   }
 };
+
+const sendLeaveConfirmationEmail = async(userFullName, userEmail, Reason) => {
+  const mailOptions = {
+    from: 'rajibalaeshawari@gmail.com',
+    to: userEmail,
+    subject : 'Leave Application Reject',
+    text: `Dear${userFullName},\n\nYour leave application has been rejected.\n\nReason: ${Reason}\n\nRegards,\nHR Department`,
+  };
+  try{
+    await transporter.sendMail(mailOptions);
+    console.log(`Leave Confirmation email send sucessfully${userEmail}`);
+  } catch(error) {
+    console.log('Error sending leave confirmation email:', error);
+  }
+}; 
+
 app.use(cors({
     origin: 'https://react-project-sepia-tau.vercel.app',
     //origin: 'http://localhost:3000',// Frontend URL
@@ -347,6 +363,7 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
 
     const newLeave = new LeaveApplication({
       userId: req.user.id,
+      employeeid: user.employeeid,
       leaveType,
       permissionType: leaveType === "Permission" ? permissionType : leaveDuration,
       halfDayOption: leaveDuration === "Half Day" ? halfDayOption : halfDayOption,
@@ -359,7 +376,7 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
       
     });
     await newLeave.save();
-    const additionalEmail = "rajibalaeshwari@gmail.com";
+   const additionalEmail = "rajibalaeshwari@gmail.com";
     let recipients = [];
 
     if (employeeInfo.role === "Employee") {
@@ -404,7 +421,7 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
       console.log("Leave Data:", leaveData);
 
       if (!leaveData) {
-        console.error("❌ Error: Leave data is undefined!");
+        console.error(" Error: Leave data is undefined!");
         return res.status(400).json({ error: "Leave data is required." });
       }
       const employeeName = user.fullname;
@@ -419,8 +436,8 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
         })
       );
     } else {
-      console.log("❌ No valid email recipients found.");
-    }
+      console.log(" No valid email recipients found.");
+    } 
     //await newLeave.save();
           
     res.status(201).json({ message: "Leave application submitted successfully", data: newLeave });
@@ -874,12 +891,20 @@ app.put('/reject-leave/:id', async (req, res) => {
       { status: 'Rejected', statusReason: reason  },
       { new: true }
     );
-
-    if (leave) {
-      res.status(200).json(leave);
-    } else {
-      res.status(404).json({ message: 'Leave application not found' });
+    const employee = await UserInfo.findOne(
+      {employeeid:leave.employeeid},
+      {email: 1, fullname: 1}
+    );
+    console.log("Employee Details:", employee);
+    if(employee && employee.email) {
+      console.log(`sending email: ${employee.email}`)
+      await sendLeaveConfirmationEmail(employee.fullname, employee.email, reason)
+    }else {
+      console.warn(`Employee email not found. ${leave.employeeid}Email not sent.`);
     }
+
+    res.status(200).json({ message: 'Leave rejected and email sent', leave });
+
   } catch (error) {
     console.error('Error rejecting leave:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -911,7 +936,7 @@ app.put('/cancel-leave/:leaveId', async (req, res) => {
 app.get('/leave-history/:id', async (req, res) => {
   try {
     const activeEmployees = await UserInfo.find({ status: 'active' }).select('_id'); // Fetch only active employees
-    const leaveHistory = await LeaveApplication.find({userId: { $in: activeEmployees.map(employee => employee._id) } }).populate("userId", "employeeid fullname");
+    const leaveHistory = await LeaveApplication.find({userId: { $in: activeEmployees.map(employee => employee._id) } }).populate("userId", "employeeid fullname").sort({ appliedDate: -1 });;
     
     // Count the number of leave with each status
     const totalApproved = await LeaveApplication.countDocuments({ status: "Approved" });

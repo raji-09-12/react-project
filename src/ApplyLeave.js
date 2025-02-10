@@ -16,6 +16,7 @@ function LeaveApplication() {
   const [error, setError] = useState('');
   const [totalDays, setTotalDays] = useState(0);
   const [existingLeave, setExistingLeave] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -59,6 +60,7 @@ function LeaveApplication() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -308,12 +310,17 @@ function LeaveApplication() {
             </div>
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            >
-              Submit Leave Request
-            </button>
+            <button 
+                            type="submit" 
+                            disabled={isSubmitting }
+                            className={`w-full py-2 text-white rounded-lg ${
+                                isSubmitting 
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-blue-500 hover:bg-blue-600'
+                            }`}
+                        >
+                            {isSubmitting ? 'Submitting...' : 'Submit Leave Request'}
+                        </button>
           </form>
         </div>
       </div>

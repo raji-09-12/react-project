@@ -11,6 +11,7 @@ function AddEmployee() {
   const [department, setDepartment] = useState('');
   const [teamLeaders, setTeamLeaders] = useState([]);
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     // Fetch team leaders from the backend
@@ -46,6 +47,8 @@ function AddEmployee() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
 
     if (!employeeId || !fullName || !role || !department ) {
       setError('All fields are required');
@@ -166,10 +169,18 @@ function AddEmployee() {
                 </select>
               </div>
             )}
-
-          <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-            Add Employee
+          <button 
+              type="submit" 
+              disabled={isSubmitting }
+              className={`w-full py-2 text-white rounded-lg ${
+                  isSubmitting 
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 hover:bg-blue-600'
+              }`}
+          >
+              {isSubmitting ? 'Adding...' : 'Add Employee'}
           </button>
+          
         </form>
       </div>
       </div>
