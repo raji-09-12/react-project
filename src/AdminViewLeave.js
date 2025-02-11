@@ -294,6 +294,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
             <p>Total Leave Days: {totalLeaveDays}</p>
             
           </div> */}
+          {displayLeaveHistory.length > 0 ? (
           <div className="w-full bg-white p-6 shadow-lg rounded-lg mt-6">
           <h2 className="text-2xl font-bold text-left mb-4">Day-Wise Leave Report</h2>
           <table>
@@ -352,6 +353,9 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
             </tbody>
           </table>
           </div>
+          ) : (
+            <p className="text-center text-gray-500">No leave applications found.</p>
+        )}
         </div>
       </div>
     </div>
