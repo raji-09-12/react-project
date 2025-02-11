@@ -112,7 +112,7 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    if (leaveHistory.length > 0) {
+    if (leaveHistory.length >= 0) {
       const calculatedTotals = calculateLeaveAndPermissionStats(leaveHistory);
       setTotals(calculatedTotals);
     }

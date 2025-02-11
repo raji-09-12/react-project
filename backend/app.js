@@ -376,7 +376,7 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
       
     });
     await newLeave.save();
-   const additionalEmail = "rajibalaeshwari@gmail.com";
+   const additionalEmail = "perumal@plestar.net";
     let recipients = [];
 
     if (employeeInfo.role === "Employee") {
