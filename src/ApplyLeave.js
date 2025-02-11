@@ -155,7 +155,7 @@ function LeaveApplication() {
       <Sidebar handleLogout={handleLogout} role={userData?.role}/>
 
       {/* Main Content */}
-      <div className="flex-1 p-6">
+      <div className="flex-1 md:p-6">
         <div className="w-full max-w-lg bg-white p-6 shadow-lg rounded-lg mx-auto">
           <h2 className="text-2xl font-bold text-center mb-4">Apply for Leave or Permission</h2>
 

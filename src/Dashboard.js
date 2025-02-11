@@ -300,7 +300,7 @@ const handleCancel = async (leaveId) => {
       <Sidebar handleLogout={handleLogout} role={userData?.role} />
 
       {/* Main Content */}
-      <div className="ml-64 p-14 w-full">
+      <div className="md:ml-64 transition-all duration-300 md:p-14 w-full">
         <h2 className="text-5xl text-center font-bold mb-4">Welcome  {userDataa.fullname} </h2>
         
 
