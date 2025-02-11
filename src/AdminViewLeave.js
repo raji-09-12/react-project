@@ -233,7 +233,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
   return (
     <div className="flex ">
       <Sidebar handleLogout={handleLogout} />
-      <div className="main-content flex-1 ml-64 p-6">
+      <div className="main-content flex-1 ml-0 md:ml-64 transition-all duration-300 p-6">
         <div className="w-full max-w-xl sm:max-w-md lg:max-w-7xl bg-white p-6 shadow-lg rounded-lg mx-auto">
           <h2 className="text-2xl font-bold text-center mb-4">Employee Leave History</h2>
           <DateRangePicker

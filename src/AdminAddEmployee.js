@@ -88,7 +88,7 @@ function AddEmployee() {
 
   return (
     <div className="flex-1 p-6">
-      <div className="w-full max-w-lg bg-white p-6 shadow-lg rounded-lg mx-auto">
+      <div className="w-full max-w-lg bg-white md:p-6 shadow-lg rounded-lg mx-auto">
       <Sidebar handleLogout={handleLogout} />   {/* Add Sidebar on the left side */}
       
       <div className="flex-1 p-6">

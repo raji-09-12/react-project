@@ -230,7 +230,7 @@ const todayLeaveData = leaveHistory.filter((leave) => {
   return (
     <div className="flex min-h-screen">
       <Sidebar handleLogout={handleLogout} />
-      <div className="ml-64 p-14 w-full ">
+      <div className="md:p-14 w-full ml-0 md:ml-64 transition-all duration-300">
         <h2 className="text-4xl font-bold text-center mb-4">Welcome {userData?.fullname}</h2>
         <div className="bg-pink-100 shadow-sm rounded-lg p-8 border border-gray-300 flex flex-col justify-center items-center">
             <p className="text-3xl font-bold text-gray-800 mb-4">Employees</p> <span className="text-gray-800 text-5xl">{employees.length}</span>
