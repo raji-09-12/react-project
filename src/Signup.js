@@ -68,8 +68,8 @@ function Signup() {
 
   return (
     <div className="flex items-center justify-center bg-gray-100">
-      <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
-        <div className="w-1/2 bg-gray-100 flex justify-center items-center p-3">
+      <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="hidden md:flex w-1/2 bg-gray-100 flex justify-center items-center p-3">
           <img
             src="/assets/emplogin.jpg"
             alt="Employee"
@@ -77,7 +77,7 @@ function Signup() {
           />
         </div>
 
-        <div className="w-1/2 p-7 flex flex-col justify-center">
+        <div className="md:w-1/2 p-7 flex flex-col justify-center">
           <h3 className="text-2xl font-bold text-gray-800 text-center mb-2">Welcome</h3>
           <h2 className="mb-6 text-2xl font-bold text-center text-gray-800">Create an Account</h2>
 

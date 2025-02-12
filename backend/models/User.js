@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   employeeid: {
     type: String,
     required: true,
-    unique: true, // Ensures the employeeid is unique
+    unique: true, 
   },
   fullname: {
     type: String,
@@ -22,10 +22,10 @@ const userSchema = new mongoose.Schema({
   },
   assignedTeamLeader: {
     type: String, 
-    default: null,
     required: function () {
       return this.role === 'Employee';
     },
+    default: null,
   },
 }, { collection: "EmployeeInfo" });  
 

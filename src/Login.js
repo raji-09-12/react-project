@@ -54,10 +54,10 @@ function Login() {
 
         <div className="flex items-center justify-center h-screen bg-gray-100">
 
-            <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden ">
+            <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden ">
                
                 {/* Left Side - Image */}
-                <div className="w-1/2 bg-white-800 flex justify-center items-center p-3">
+                <div className="md:w-1/2 bg-white-800 flex justify-center items-center p-3">
                     <img 
                         src="/assets/emplogin.jpg" 
                         alt="Employee" 
@@ -66,7 +66,7 @@ function Login() {
                 </div>
 
                 {/* Right Side - Login Form */}
-                <div className="w-1/2 p-8 flex flex-col justify-center">
+                <div className="md:w-1/2 p-8 flex flex-col justify-center">
                     
                     <h3 className="text-2xl font-bold text-gray-800 text-center mb-2">Welcome </h3>
                     

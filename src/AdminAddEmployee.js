@@ -81,6 +81,7 @@ function AddEmployee() {
       }
       alert('Employee Id Created successful!');
     } catch (error) {
+      
       console.error('Error creating employee:', error);
       setError('Error creating employee. Please try again.');
     }
@@ -145,7 +146,7 @@ function AddEmployee() {
               >
                 <option value="">Select Role</option>
                 
-                <option value="Manager">Manager</option>
+                <option value="Manger">Manager</option>
                 <option value="Department Leader">Department Leader</option>
                 <option value="TeamLeader">Team Leader</option>
                 <option value="Employee">Employee</option>
