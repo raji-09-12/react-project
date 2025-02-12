@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
   },
   assignedTeamLeader: {
     type: String, 
+    default: null,
     required: function () {
       return this.role === 'Employee';
     },

@@ -145,7 +145,7 @@ function AddEmployee() {
               >
                 <option value="">Select Role</option>
                 
-                <option value="Manger">Manager</option>
+                <option value="Manager">Manager</option>
                 <option value="Department Leader">Department Leader</option>
                 <option value="TeamLeader">Team Leader</option>
                 <option value="Employee">Employee</option>

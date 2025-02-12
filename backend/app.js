@@ -958,21 +958,21 @@ app.get('/leave-history/:id', async (req, res) => {
 
 // POST route for adding an employee with only employeeid and fullname
 app.post('/add-basic', async (req, res) => {
-  console.log(req.body);
-  
-    const { employeeid, fullname, role, department, assignedTeamLeader  } = req.body;
+  //console.log(req.body);
+  try {
+    const { employeeid, fullname, role, department, assignedTeamLeader } = req.body;
 
     // Validate if employeeid and fullname are provided
     if (!employeeid || !fullname || !role || !department ) {
-      return res.status(400).json({ message: 'Employee ID and Full Name are required' });
+      return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Check if employee already exists
+    
     const existingEmployee = await EmployeeInfo.findOne({ employeeid });
     if (existingEmployee) {
       return res.status(400).json({ message: 'Employee ID already exists' });
     }
-  try {
+  
     // Create a new employee
     const newEmployee = new EmployeeInfo({
       employeeid,
@@ -985,6 +985,9 @@ app.post('/add-basic', async (req, res) => {
     await newEmployee.save();
     res.status(201).json({ message: 'Employee added successfully', employee: newEmployee });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Employee ID already exists' });
+    }
     console.error('Error adding employee:', error);
     res.status(500).json({ message: 'Error creating employee. Please try again.' });
   }
