@@ -53,6 +53,7 @@ function LeaderViewLeave() {
         const allLeave = response.data;
       const leaderDepartment = userData?.department || "";
       const userRole = userData?.role || ""; 
+      const assignedTeamLeader = userData?.assignedTeamLeader;
 
       let departmentLeave = [];
 
@@ -60,7 +61,10 @@ function LeaderViewLeave() {
       if (userRole === "TeamLeader") {
         
         departmentLeave = allLeave.filter(
-          (leave) => leave?.employeeDetails?.department === leaderDepartment && leave?.employeeDetails?.role === "Employee"
+          (leave) => 
+            leave?.employeeDetails?.department === leaderDepartment && 
+          leave?.employeeDetails?.role === "Employee" && 
+          (assignedTeamLeader ? leave?.employeeDetails?.assignedTeamLeader === assignedTeamLeader : true)
         );
       
       }else if (userRole === "Department Leader") {

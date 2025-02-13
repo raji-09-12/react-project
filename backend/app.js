@@ -374,23 +374,33 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
       totalDays,
       fullname: user.fullname,
       department: employeeInfo.department,
+      assignedTeamLeader: employeeInfo.assignedTeamLeader,
       
     });
     await newLeave.save();
+    
    const additionalEmail = "perumal@plestar.net";
+   
     let recipients = [];
 
     if (employeeInfo.role === "Employee") {
+      const alltl = await EmployeeInfo.findOne(
+        {role:"TeamLeader", department:employeeInfo.department},
+        {employeeid:1, fullname:1}
+      )
+      console.log("Team Leaders found:", alltl);
       const teamLeaders = await EmployeeInfo.find(
-        { role: "TeamLeader", department: employeeInfo.department },
-        { employeeid: 1, fullname: 1 }
+        { role: "TeamLeader", department: employeeInfo.department, fullname: employeeInfo.assignedTeamLeader },
+        { employeeid: 1,  fullname:1 }
       );
-
+      console.log("Team Leaders found:", teamLeaders);
+      console.log("Assigned Team Leader ID:", employeeInfo.assignedTeamLeader);
+      
       const departmentLeaders = await EmployeeInfo.find(
-        { role: "Department Leader", department: employeeInfo.department },
-        { employeeid: employeeInfo.assignedTeamLeader },
+        { role: "Department Leader", department: employeeInfo.department },       
         { employeeid: 1, fullname: 1 }
       );
+      console.log("Team Leaders found:", departmentLeaders);
 
       recipients = [...teamLeaders, ...departmentLeaders];  
     } else if (employeeInfo.role === "TeamLeader") {
@@ -416,7 +426,7 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
     
     const validRecipients = recipientEmails.filter(recipient => recipient !== null);
     console.log("Emails to Send:", validRecipients);
-
+    
     if (validRecipients.length > 0) {
       const leaveData = req.body; 
       console.log("Leave Data:", leaveData);
@@ -1122,7 +1132,7 @@ app.get('/leader-view-leave-history', async (req, res) => {
       {
         $unwind: {
           path: "$employeeDetails",
-          preserveNullAndEmptyArrays: true // Some users may not have EmployeeInfo data
+          preserveNullAndEmptyArrays: false // Some users may not have EmployeeInfo data
         }
       },
       {

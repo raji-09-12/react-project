@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema({
     required: function () {
       return this.role === 'Employee';
     },
-    default: null,
   },
 }, { collection: "EmployeeInfo" });  
 

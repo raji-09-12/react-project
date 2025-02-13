@@ -20,6 +20,7 @@ const LeaveApplicationSchema = new mongoose.Schema({
   appliedDate: { type: Date, default: new Date() }, 
   fullname: { type: String },
   department: { type: String },
+  assignedTeamLeader: { type: String },
 });
 
 module.exports = mongoose.model("LeaveApplication", LeaveApplicationSchema);

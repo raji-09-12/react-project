@@ -134,6 +134,7 @@ function Profile() {
                 <p className="text-xl font-bold text-gray-600 mb-4">Employee ID :<span className="text-gray-800  text-xl"> {userData.employeeid}</span></p>
                 <p className="text-xl font-bold text-gray-600 mb-4">Date of Joining :<span className="text-gray-800  text-xl"> {userData.dateOfJoining ? new Date(userData.dateOfJoining).toISOString().slice(0, 10) : ''}</span></p>
                 <p className="text-xl font-bold text-gray-600 mb-4">Department :<span className="text-gray-800  text-xl"> {userData.department}</span></p>
+                <p className="text-xl font-bold text-gray-600 mb-4">TeamLeader :<span className="text-gray-800  text-xl"> {userData.assignedTeamLeader}</span></p>
                 <p className="text-xl font-bold text-gray-600 mb-4">Role  :<span className="text-gray-800  text-xl"> {userData.role}</span></p>
                 <p className="text-xl font-bold text-gray-600 mb-4">Mobile Number :<span className="text-gray-800  text-xl"> {userData.mobileno}</span></p>
                 <p className="text-xl font-bold text-gray-600 mb-4">Gender :<span className="text-gray-800  text-xl"> {userData.gender}</span></p>

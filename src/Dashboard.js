@@ -44,6 +44,7 @@ function Dashboard() {
         const allLeave = response.data;
       const leaderDepartment = userData?.department || "";
       const userRole = userData?.role || ""; 
+      const assignedTeamLeader = userData?.assignedTeamLeader || "";
 
       let departmentLeave = [];
 
@@ -51,7 +52,10 @@ function Dashboard() {
       if (userRole === "TeamLeader") {
         
         departmentLeave = allLeave.filter(
-          (leave) => leave?.employeeDetails?.department === leaderDepartment && leave?.employeeDetails?.role === "Employee"
+          (leave) => 
+            leave?.employeeDetails?.department === leaderDepartment && 
+          leave?.employeeDetails?.role === "Employee" &&
+          (assignedTeamLeader ? leave?.employeeDetails?.assignedTeamLeader === assignedTeamLeader : true)
         );
       
       }else if (userRole === "Department Leader") {
@@ -62,8 +66,9 @@ function Dashboard() {
             leave?.employeeDetails?.role !== "Department Leader"
         );
       }
-
+      
       setempLeaveHistory(departmentLeave);
+      
       } catch (error) {
         setError('Error fetching leave history');
       } finally {
@@ -73,7 +78,7 @@ function Dashboard() {
     
     fetchempLeaveHistory();
   }, [userData]);
-
+  
   useEffect(() => {
     // Get the token from localStorage
     const token = localStorage.getItem('token');
