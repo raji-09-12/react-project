@@ -12,6 +12,7 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const e = require('express');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -963,12 +964,13 @@ app.post('/add-basic', async (req, res) => {
     const { employeeid, fullname, role, department, assignedTeamLeader } = req.body;
 
     // Validate if employeeid and fullname are provided
-    if (!employeeid || !fullname || !role || !department ) {
+    if (!employeeid || !fullname || !role || !department) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     
     const existingEmployee = await EmployeeInfo.findOne({ employeeid });
+    console.log('Existing Employee:', existingEmployee);
     if (existingEmployee) {
       return res.status(400).json({ message: 'Employee ID already exists' });
     }

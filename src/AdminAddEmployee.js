@@ -50,7 +50,7 @@ function AddEmployee() {
     setIsSubmitting(true);
     
 
-    if (!employeeId || !fullName || !role || !department ) {
+    if (!employeeId || !fullName || !role || !department) {
       setError('All fields are required');
       return;
     }
@@ -66,16 +66,9 @@ function AddEmployee() {
     };
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}add-basic`,
-        employee,
-       // { employeeid, fullname },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}add-basic`, employee, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, },
+      });
       if (response.status === 201) {
         navigate('/employees'); // Redirect to employee list page after success
       }
@@ -83,7 +76,7 @@ function AddEmployee() {
     } catch (error) {
       
       console.error('Error creating employee:', error);
-      setError('Error creating employee. Please try again.');
+      setError(error.response ? error.response.data.message : error.message);
     }
   };
 
