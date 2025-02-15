@@ -15,7 +15,7 @@ function LeaveApplication() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [totalDays, setTotalDays] = useState(0);
-  const [existingLeave, setExistingLeave] = useState([]);
+  //const [existingLeave, setExistingLeave] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -23,7 +23,7 @@ function LeaveApplication() {
     navigate('/login');
   };
 
-  useEffect(() => {
+  /* useEffect(() => {
     const token = localStorage.getItem('token');
     console.log('Token:', token);
     if (!token) {
@@ -55,7 +55,7 @@ function LeaveApplication() {
     };
 
     fetchExistingLeave();
-  }, []);
+  }, []); */
 
 
   const handleSubmit = async (e) => {
@@ -80,7 +80,7 @@ function LeaveApplication() {
     return;
   }
 
-    const isDateTaken = existingLeave.some((leave) => {
+    /*const isDateTaken = existingLeave.some((leave) => {
       if (leave.status?.toLowerCase() === 'rejected' || leave.status?.toLowerCase() === 'cancelled') {
         return false;
       }
@@ -102,7 +102,7 @@ function LeaveApplication() {
       setError('The selected dates are already taken for leave or permission.');
       return;
     }
-
+*/
     const leaveData = { leaveType, permissionType, halfDayOption, startDate, endDate, reason, leaveDuration };
     console.log(token)
     try {

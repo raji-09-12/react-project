@@ -275,7 +275,7 @@ const authenticateToken = (req, res, next) => {
         },
         {
           $project: {
-            fullname: 1,
+            fullname: '$roleDetails.fullname',
             employeeid: 1,
             mobileno: 1,
             email: 1,
@@ -379,7 +379,7 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
     });
     await newLeave.save();
     
-   const additionalEmail = "perumal@plestar.net";
+   const additionalEmail = "peruma@plestar.net";
    
     let recipients = [];
 
@@ -709,7 +709,15 @@ app.get('/leave-history', async (req, res) => {
     const leaveHistory = await LeaveApplication.find({
       userId: { $in: activeEmployees.map(employee => employee._id) }
     })
-    .populate('userId', 'fullname employeeid email gender address') // Populate employee details
+    .populate({
+      path: 'userId',
+      select: 'fullname employeeid email gender address ',
+      populate: {
+        path: 'employeeInfoId', 
+        select: 'fullname role department assignedTeamLeader'
+      }
+    })
+    //.populate('userId', 'fullname employeeid email gender address') // Populate employee details
     .sort({ appliedDate: -1 });
 
     
@@ -1068,13 +1076,13 @@ app.put('/admin-edit-employee/:id', authenticateToken, async (req, res) => {
     // Find employee and update their details
     const updatedEmployee = await UserInfo.findByIdAndUpdate(
       id,
-      { fullname, email, gender, address, mobileno, dateOfJoining },
+      { email, gender, address, mobileno, dateOfJoining },
       { new: true } // Return the updated document
     );
 
     const updatedRole = await EmployeeInfo.findOneAndUpdate(
       { employeeid: updatedEmployee.employeeid },
-      { role, department, assignedTeamLeader },
+      { fullname, role, department, assignedTeamLeader },
       
       { new: true }
     );
@@ -1101,7 +1109,7 @@ app.get('/team-leaders', async (req, res) => {
     res.status(500).json({ message: 'Error fetching team leaders' });
   }
 });
-
+{/*
 app.get('/leader-view-leave-history', async (req, res) => {
   try {
     
@@ -1172,7 +1180,7 @@ app.get('/leader-view-leave-history', async (req, res) => {
     res.status(500).json({ message: "Error fetching leave history" });
   }
 });
-
+*/}
 
 app.listen(5001, () => {
     console.log('Server running on port 5000');

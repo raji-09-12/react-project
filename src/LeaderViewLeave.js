@@ -46,14 +46,14 @@ function LeaderViewLeave() {
       
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}leader-view-leave-history`, {
-          
+        //const response = await axios.get(`${process.env.REACT_APP_API_URL}leader-view-leave-history`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}leave-history`, { 
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         const allLeave = response.data;
       const leaderDepartment = userData?.department || "";
       const userRole = userData?.role || ""; 
-      const assignedTeamLeader = userData?.assignedTeamLeader;
+      //const assignedTeamLeader = userData?.assignedTeamLeader;
 
       let departmentLeave = [];
 
@@ -62,17 +62,18 @@ function LeaderViewLeave() {
         
         departmentLeave = allLeave.filter(
           (leave) => 
-            leave?.employeeDetails?.department === leaderDepartment && 
-          leave?.employeeDetails?.role === "Employee" && 
-          (assignedTeamLeader ? leave?.employeeDetails?.assignedTeamLeader === assignedTeamLeader : true)
+            leave.userId.employeeInfoId?.department === leaderDepartment && 
+            leave.userId.employeeInfoId?.role === "Employee" && 
+            leave.userId.employeeInfoId?.assignedTeamLeader === userData.fullname
+           // (assignedTeamLeader ? leave.userId.employeeInfoId?.assignedTeamLeader === assignedTeamLeader : true)
         );
       
       }else if (userRole === "Department Leader") {
         
         departmentLeave = allLeave.filter(
           (leave) => 
-            leave?.employeeDetails?.department === leaderDepartment && 
-            leave?.employeeDetails?.role !== "Department Leader"
+            leave.userId.employeeInfoId?.department === leaderDepartment && 
+            leave.userId.employeeInfoId?.role !== "Department Leader"
         );
       }
 
@@ -346,9 +347,9 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
             <tbody>
               {displayLeaveHistory.map((leave) => (
                 <tr key={leave._id}>
-                  <td className="border border-gray-400 px-4 py-2">{leave?.userDetails?.employeeid}</td>
-                  <td className="border border-gray-400 px-4 py-2">{leave?.userDetails?.fullname}</td>
-                  <td className="border border-gray-400 px-4 py-2">{leave?.employeeDetails?.role}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeid}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.userId.fullname}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeInfoId?.role}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.leaveType}-{leave.permissionType} </td>
                   <td className="border border-gray-400 px-4 py-2">{leave?.reason}</td>
                   <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
@@ -375,8 +376,14 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                       <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" onClick={() => handleApprove(leave._id)}>Approve</button>)}
                       {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
                       <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onClick={() => handleReject(leave._id)}>Reject</button>)}
-                      {leave.status === 'Approved' && new Date(leave.endDate) && new Date(leave.startDate)>= new Date() && (
-                      <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={() => handleCancel(leave._id)}>Cancel</button>)}
+                      {
+                      leave.status === 'Approved' && (    
+                        (new Date(leave.endDate).setHours(23, 59, 59, 999) >= new Date().setHours(23, 59, 59, 999)) || 
+                        (leave.endDate === null && new Date(leave.startDate).setHours(23, 59, 59, 999) >= new Date().setHours(23, 59, 59, 999))
+                      ) && (
+                        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={() => handleCancel(leave._id)}>
+                          Cancel
+                        </button>)}
                     </div>
                   </td>
                 </tr>

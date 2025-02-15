@@ -37,14 +37,15 @@ function Dashboard() {
   useEffect(() => {
     const fetchempLeaveHistory = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}leader-view-leave-history`, {
+        //const response = await axios.get(`${process.env.REACT_APP_API_URL}leader-view-leave-history`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}leave-history`, {
           
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         const allLeave = response.data;
       const leaderDepartment = userData?.department || "";
       const userRole = userData?.role || ""; 
-      const assignedTeamLeader = userData?.assignedTeamLeader || "";
+      //const assignedTeamLeader = userData?.assignedTeamLeader;
 
       let departmentLeave = [];
 
@@ -53,17 +54,18 @@ function Dashboard() {
         
         departmentLeave = allLeave.filter(
           (leave) => 
-            leave?.employeeDetails?.department === leaderDepartment && 
-          leave?.employeeDetails?.role === "Employee" &&
-          (assignedTeamLeader ? leave?.employeeDetails?.assignedTeamLeader === assignedTeamLeader : true)
+            leave.userId.employeeInfoId?.department === leaderDepartment && 
+            leave.userId.employeeInfoId?.role === "Employee" &&
+            leave.userId.employeeInfoId?.assignedTeamLeader === userData.fullname
+            //(assignedTeamLeader ? leave.userId.employeeInfoId?.assignedTeamLeader === assignedTeamLeader : true)
         );
       
       }else if (userRole === "Department Leader") {
         
         departmentLeave = allLeave.filter(
           (leave) => 
-            leave?.employeeDetails?.department === leaderDepartment && 
-            leave?.employeeDetails?.role !== "Department Leader"
+            leave.userId.employeeInfoId?.department === leaderDepartment && 
+            leave.userId.employeeInfoId?.role !== "Department Leader"
         );
       }
       
@@ -321,20 +323,20 @@ const handleCancel = async (leaveId) => {
             <div className="flex flex-col gap-4 grid lg:grid-cols-5 sm:grid-cols-5">
               
             <div className="bg-gray-100 shadow-sm rounded-lg p-8 border border-gray-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Days</p> <span className="text-gray-800 text-5xl">{totalLeaveDays}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Days</p> <span className="text-gray-800 text-4xl">{totalLeaveDays}</span>
             </div>
 
               <div className="bg-yellow-100 shadow-sm rounded-lg p-8 border border-yellow-300 flex flex-col justify-center items-center ">
-                <p className="text-xl font-bold text-gray-600 mb-4">Pending</p> <span className="text-gray-800  text-5xl">{totals.totalPendingLeave}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Pending</p> <span className="text-gray-800  text-4xl">{totals.totalPendingLeave}</span>
               </div>
               <div className="bg-green-100 shadow-sm rounded-lg p-8 border border-green-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Approved </p><span className="text-gray-800 text-5xl"> {totals.totalApprovedLeave}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Approved </p><span className="text-gray-800 text-4xl"> {totals.totalApprovedLeave}</span>
               </div>
               <div className="bg-red-100 shadow-sm rounded-lg p-8 border border-red-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Rejected </p><span className="text-gray-800 text-5xl">{totals.totalRejectedLeave}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Rejected </p><span className="text-gray-800 text-4xl">{totals.totalRejectedLeave}</span>
               </div>
               <div className="bg-blue-100 shadow-sm rounded-lg p-8 border border-blue-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Cancelled </p><span className="text-gray-800 text-5xl">{totals.totalCancelledLeave}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Cancelled </p><span className="text-gray-800 text-4xl">{totals.totalCancelledLeave}</span>
               </div>
             </div>
           </div>
@@ -346,20 +348,20 @@ const handleCancel = async (leaveId) => {
             <div className="flex flex-col gap-4 grid lg:grid-cols-5 sm:grid-cols-5">
               
             <div className="bg-gray-100 shadow-sm rounded-lg p-8 border border-gray-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Permission</p> <span className="text-gray-800 text-5xl">{totalPermissionDays}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Permission</p> <span className="text-gray-800 text-4xl">{totalPermissionDays}</span>
             </div>
 
               <div className="bg-yellow-100 shadow-sm rounded-lg p-8 border border-yellow-300 flex flex-col justify-center items-center ">
-                <p className="text-xl font-bold text-gray-600 mb-4">Pending</p> <span className="text-gray-800  text-5xl">{totals.totalPendingPermission}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Pending</p> <span className="text-gray-800  text-4xl">{totals.totalPendingPermission}</span>
               </div>
               <div className="bg-green-100 shadow-sm rounded-lg p-8 border border-green-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Approved </p><span className="text-gray-800 text-5xl"> {totals.totalApprovedPermission}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Approved </p><span className="text-gray-800 text-4xl"> {totals.totalApprovedPermission}</span>
               </div>
               <div className="bg-red-100 shadow-sm rounded-lg p-8 border border-red-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Rejected </p><span className="text-gray-800 text-5xl">{totals.totalRejectedPermission}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Rejected </p><span className="text-gray-800 text-4xl">{totals.totalRejectedPermission}</span>
               </div>
               <div className="bg-blue-100 shadow-sm rounded-lg p-8 border border-blue-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Cancelled </p><span className="text-gray-800 text-5xl">{totals.totalCancelledPermission}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Cancelled </p><span className="text-gray-800 text-4xl">{totals.totalCancelledPermission}</span>
               </div>
             </div>
           </div>          
@@ -387,11 +389,11 @@ const handleCancel = async (leaveId) => {
             <tbody>
               {displayempLeaveHistory.map((leave) => (
                 <tr key={leave._id}>
-                  <td className="border border-gray-400 px-4 py-2">{leave?.userDetails?.employeeid}</td>
-                  <td className="border border-gray-400 px-4 py-2">{leave?.userDetails?.fullname}</td>
-                  <td className="border border-gray-400 px-4 py-2">{leave?.employeeDetails?.role}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeid}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.userId.fullname}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeInfoId?.role}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.leaveType}-{leave.permissionType} </td>
-                  <td className="border border-gray-400 px-4 py-2">{leave?.reason}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.reason}</td>
                   <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>

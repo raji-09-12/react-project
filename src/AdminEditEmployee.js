@@ -66,7 +66,12 @@ function AdminEditEmployee() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEmployee({ ...employee, [name]: value });
+    if (name === 'role' && (value === 'Team Leader' || value === 'Department Leader')) {
+      setEmployee({ ...employee, [name]: value, assignedTeamLeader: null });
+    } else {
+      setEmployee({ ...employee, [name]: value });
+    }
+    //setEmployee({ ...employee, [name]: value });
   };
 
   const handleSubmit = (e) => {
