@@ -379,7 +379,7 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
     });
     await newLeave.save();
     
-   const additionalEmail = "peruma@plestar.net";
+   const additionalEmail = "perumal@plestar.net";
    
     let recipients = [];
 
