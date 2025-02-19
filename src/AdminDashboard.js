@@ -246,20 +246,20 @@ const todayLeaveData = leaveHistory.filter((leave) => {
             <div className="flex flex-col gap-4 grid lg:grid-cols-5 sm:grid-cols-5">
               
             <div className="bg-gray-100 shadow-sm rounded-lg p-8 border border-gray-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Days</p> <span className="text-gray-800 text-5xl">{totalLeaveDays}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Days</p> <span className="text-gray-800 text-5xl">{totalLeaveDays}</span>
             </div>
 
               <div className="bg-yellow-100 shadow-sm rounded-lg p-8 border border-yellow-300 flex flex-col justify-center items-center ">
-                <p className="text-xl font-bold text-gray-600 mb-4">Pending</p> <span className="text-gray-800  text-5xl">{totals.totalPendingLeave}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Pending</p> <span className="text-gray-800  text-5xl">{totals.totalPendingLeave}</span>
               </div>
               <div className="bg-green-100 shadow-sm rounded-lg p-8 border border-green-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Approved </p><span className="text-gray-800 text-5xl"> {totals.totalApprovedLeave}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Approved </p><span className="text-gray-800 text-5xl"> {totals.totalApprovedLeave}</span>
               </div>
               <div className="bg-red-100 shadow-sm rounded-lg p-8 border border-red-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Rejected </p><span className="text-gray-800 text-5xl">{totals.totalRejectedLeave}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Rejected </p><span className="text-gray-800 text-5xl">{totals.totalRejectedLeave}</span>
               </div>
               <div className="bg-blue-100 shadow-sm rounded-lg p-8 border border-blue-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Cancelled </p><span className="text-gray-800 text-5xl">{totals.totalCancelledLeave}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Cancelled </p><span className="text-gray-800 text-5xl">{totals.totalCancelledLeave}</span>
               </div>
             </div>
           </div>
@@ -271,20 +271,20 @@ const todayLeaveData = leaveHistory.filter((leave) => {
             <div className="flex flex-col gap-4 grid lg:grid-cols-5 sm:grid-cols-5">
               
             <div className="bg-gray-100 shadow-sm rounded-lg p-8 border border-gray-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Permission</p> <span className="text-gray-800 text-5xl">{totalPermissionDays}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Permission</p> <span className="text-gray-800 text-5xl">{totalPermissionDays}</span>
             </div>
 
               <div className="bg-yellow-100 shadow-sm rounded-lg p-8 border border-yellow-300 flex flex-col justify-center items-center ">
-                <p className="text-xl font-bold text-gray-600 mb-4">Pending</p> <span className="text-gray-800  text-5xl">{totals.totalPendingPermission}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Pending</p> <span className="text-gray-800  text-5xl">{totals.totalPendingPermission}</span>
               </div>
               <div className="bg-green-100 shadow-sm rounded-lg p-8 border border-green-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Approved </p><span className="text-gray-800 text-5xl"> {totals.totalApprovedPermission}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Approved </p><span className="text-gray-800 text-5xl"> {totals.totalApprovedPermission}</span>
               </div>
               <div className="bg-red-100 shadow-sm rounded-lg p-8 border border-red-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Rejected </p><span className="text-gray-800 text-5xl">{totals.totalRejectedPermission}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Rejected </p><span className="text-gray-800 text-5xl">{totals.totalRejectedPermission}</span>
               </div>
               <div className="bg-blue-100 shadow-sm rounded-lg p-8 border border-blue-300 flex flex-col justify-center items-center">
-                <p className="text-xl font-bold text-gray-600 mb-4">Cancelled </p><span className="text-gray-800 text-5xl">{totals.totalCancelledPermission}</span>
+                <p className="text-l font-bold text-gray-600 mb-4">Cancelled </p><span className="text-gray-800 text-5xl">{totals.totalCancelledPermission}</span>
               </div>
             </div>
           </div>
@@ -320,12 +320,15 @@ const todayLeaveData = leaveHistory.filter((leave) => {
         </div>
 
         {/* Pending Leave Data Table */}
-        <div className="mt-8 bg-white shadow-lg rounded-lg p-6">
+        <div className=" mt-8 bg-white shadow-lg rounded-lg p-6">
           <h3 className="text-xl font-semibold mb-4">Pending Leave Requests</h3>
           {pendingLeaveData.length > 0 ? (
+            <>
+            <div className="hidden md:block mt-8 bg-white shadow-lg rounded-lg p-6">
             <table>
+              
               <thead>
-                <tr className="bg-gray-200">
+                <tr className=" bg-gray-200">
                 <th className="border border-gray-400 px-4 py-2">Employee ID</th>
                   <th className="border border-gray-400 px-4 py-2">Employee Name</th>
                   <th className="border border-gray-400 px-4 py-2">Leave Type</th>
@@ -365,7 +368,38 @@ const todayLeaveData = leaveHistory.filter((leave) => {
                   </tr>
                 ))}
               </tbody>
+
             </table>
+            </div>
+            <div className="md:hidden space-y-4">
+            {pendingLeaveData.map((leave) => (
+              <div key={leave._id} className="bg-gray-100 rounded-lg p-4 shadow">
+                <p><strong>Employee ID:</strong> {leave.userId.employeeid}</p>
+                <p><strong>Employee Name:</strong> {leave.userId.fullname}</p>
+                <p><strong>Leave Type:</strong> {leave.leaveType}</p>
+                <p><strong>Reason:</strong> {leave.reason}</p>
+                <p><strong>Start Date:</strong> {new Date(leave.startDate).toLocaleDateString()}</p>
+                <p><strong>End Date:</strong> {leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</p>
+                <p><strong>Total Days:</strong> {leave.totalDays}</p>
+                <p><strong>Status:</strong> {leave.status}</p>
+                <div className="flex space-x-2 mt-2">
+                  <button
+                    onClick={() => handleApprove(leave._id)}
+                    className="bg-green-500 text-white px-4 py-2 rounded"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleReject(leave._id)}
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          </>
           ) : (
             <p>No pending leave requests.</p>
           )}

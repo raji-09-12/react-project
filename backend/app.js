@@ -70,12 +70,12 @@ const sendConfirmationEmail = async ( userFullName, userEmail, leaveData, employ
     from: 'rajibalaeshwari@gmail.com',
     to: userEmail,
     subject: 'Employee Leave Request',
-    text: `Dear ${userFullName},\n\nAn employee has applied for leave.\n\n` +
+    text: `Dear ${userFullName},\n\nAn ${employeeName} has applied for ${leaveType}.\n\n` +
           `Employee Name: ${employeeName}\n` +
           `Department: ${department}\n` +
           `Role: ${role}\n\n` +
-          `You can view more details ${dashboardLink}\n\n` +
-          `${leaveDetails}\n\nBest Regards,\nHR Team`,
+          `${leaveDetails}\n\n` +
+          `You can view more details ${dashboardLink}\n\nBest Regards,\nHR Team`,
    
   };
 
@@ -379,7 +379,7 @@ app.post("/apply-leave", authenticateToken, async (req, res) => {
     });
     await newLeave.save();
     
-   const additionalEmail = "peruma@plestar.net";
+   const additionalEmail = "perumal@plestar.net";
    
     let recipients = [];
 

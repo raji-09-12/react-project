@@ -138,7 +138,7 @@ const filteredLeave = leave.filter((leave) => {
 
             {/* Main Content */}
             <div className="main-content flex-1 md:ml-64 transition-all duration-300  md:p-6">
-                <div className="w-full max-w-xl sm:max-w-md lg:max-w-7xl bg-white p-6 shadow-lg rounded-lg mx-auto">
+                <div className="w-full max-w-fit lg:max-w-fit bg-white p-6 shadow-lg rounded-lg mx-auto">
                     <h2 className="text-2xl font-bold text-center mb-4">Leave History</h2>
                     <DateRangePicker
                         onChange={(item) => setDateRange([item.selection])}
@@ -169,6 +169,8 @@ const filteredLeave = leave.filter((leave) => {
 
                     {/* Leave Applications Table */}
                     {displayLeave.length > 0 ? (
+                        <>
+                       <div className="hidden md:block mt-8 bg-white shadow-lg rounded-lg p-6">
                         <table className="w-full border-collapse border border-gray-400">
                             <thead>
                                 <tr className="bg-gray-200">
@@ -207,7 +209,7 @@ const filteredLeave = leave.filter((leave) => {
                                                 {leave.status}
                                             </span>
                                         </td>
-                                        <td className="border border-gray-400 px-4 py-2">{leave.statusReason}</td>
+                                        <td className="border border-gray-400 px-4 py-2">{leave.statusReason ||'N/A'}</td>
                                         <td className="border border-gray-400 px-4 py-2">
                                             {leave.startDate ? new Date(leave.startDate).toLocaleDateString() : 'N/A'}
                                         </td>
@@ -240,6 +242,52 @@ const filteredLeave = leave.filter((leave) => {
                                 ))}
                             </tbody>
                         </table>
+                        </div>
+                        <div className="md:hidden space-y-4">
+                        {displayLeave.map((leave) => (
+                            <div key={leave._id} className="bg-gray-100 rounded-lg p-4 shadow">
+                            <p><strong>Leave Type:</strong> {leave.leaveType}</p>
+                            <p><strong>Reason:</strong> {leave.reason}</p>
+                            <p><strong>Session:</strong> {leave.permissionType}</p>
+                            <p>
+                            <strong>Status:</strong> 
+                            <span
+                                className={`ml-2 px-2 py-1 rounded ${
+                                leave.status === 'Approved' ? 'bg-green-500 text-white' :
+                                leave.status === 'Rejected' ? 'bg-red-500 text-white' :
+                                leave.status === 'Cancelled' ? 'bg-blue-500 text-white' :
+                                'bg-yellow-500 text-white'
+                                }`}
+                            >
+                                {leave.status}
+                            </span>
+                            </p>
+                            <p><strong>Status Reason:</strong> {leave.statusReason || 'N/A'}</p>
+                            <p><strong>Start Date:</strong> {new Date(leave.startDate).toLocaleDateString()}</p>
+                            <p><strong>End Date:</strong> {leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</p>
+                            <p><strong>Total Days:</strong> {leave.totalDays}</p>
+                            <div className="fled space x-4">
+                                {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
+                                    <FontAwesomeIcon
+                                        icon={faEdit}
+                                        className="text-green-500 cursor-pointer mr-3 hover:text-green-600"
+                                        onClick={() => handleEdit(leave._id)}
+                                    />
+                                )}
+                                {leave.status !== 'Approved' && leave.status !== 'Rejected'&& leave.status !== 'Cancelled' &&
+                                    <button
+                                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                                        onClick={() => handleCancel(leave._id)}
+                                    >
+                                        Cancel
+                                    </button>
+                                }
+                            </div>
+                            
+                            </div>
+                        ))}
+                        </div>
+                        </>
                     ) : (
                         <p className="text-center text-gray-500">No leave applications found.</p>
                     )}

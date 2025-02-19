@@ -97,7 +97,7 @@ function AdminEditEmployee() {
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
     <Sidebar handleLogout={handleLogout} />  
-    <div className="flex-1 p-6 ml-64">
+    <div className="flex-1 md:p-6 ml-0 md:ml-64 transition-all duration-300">
       <div className="flex w-full max-w-lg sm:max-w-md bg-white shadow-lg rounded-lg overflow-hidden mx-auto">
         <div className="w-full p-7 flex flex-col justify-center">
       <h2 className="text-2xl font-bold mb-4">Edit Employee</h2>

@@ -76,11 +76,11 @@ function AdminEmployeeList() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex">
       
         <Sidebar handleLogout={handleLogout} />
      
-     <div className="main-content flex-1 ml-0 md:ml-64 transition-all duration-300 md:p-6 ">
+     <div className="main-content w-full flex-1 ml-0 md:ml-64 transition-all duration-300 md:p-6 ">
       <div className="w-full max-w-fit  lg:max-w-fit bg-white p-6 shadow-lg rounded-lg mx-auto">
       <h2 className="text-2xl font-bold text-center mb-4">Employee Details</h2>
       <div className="text-right mb-4">
@@ -95,7 +95,8 @@ function AdminEmployeeList() {
       <div className="mb-4 text-lg font-semibold text-gray-700">
             Total Employees: {employees.length}
           </div>
-
+      <>
+      <div className="hidden md:block ">
       <table>
         <thead>
           <tr className="w-full border-collapse border border-gray-400">
@@ -141,6 +142,40 @@ function AdminEmployeeList() {
           ))}
         </tbody>
       </table>
+      </div>
+      <div className="md:hidden space-y-4">
+      {employees.map((employee) => (
+        <div key={employee._id} className="bg-gray-100 rounded-lg p-4 shadow">
+          <p><strong>Employee ID:</strong> {employee.employeeid}</p>
+          <p><strong>Employee Name:</strong> {employee.fullname}</p>
+          <p><strong>Department:</strong> {employee.department || 'N/A'}</p>
+          <p><strong>Role:</strong> {employee.role || 'N/A'}</p>
+          <p><strong>Mobile NO:</strong> {employee.mobileno}</p>
+          <p><strong>Email:</strong> {employee.email}</p>          
+          <div className="flex space-x-2 mt-2">
+          <FontAwesomeIcon
+              icon={faUser}
+              className="text-pink-500 cursor-pointer mr-1 hover:text-pink-600"
+              onClick={() => handleProfileView(employee._id)}
+          />
+          <FontAwesomeIcon
+              icon={faEdit}
+              className="text-green-500 cursor-pointer mr-1 hover:text-green-600"
+              // onClick={() => handleEdit(employee._id)} // Redirect to Edit page
+              onClick={() => navigate(`/admin-edit-employee/${employee._id}`)}
+          />
+      
+          <FontAwesomeIcon
+              icon={faTrash}
+              className="text-red-500 cursor-pointer hover:text-red-600"
+              onClick={() => handleDelete(employee._id)}
+          />
+         </div>
+       </div>
+      ))}
+      </div>
+      </>
+
       </div>
       
       </div>

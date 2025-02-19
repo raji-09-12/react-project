@@ -187,6 +187,25 @@ function Dashboard() {
     }
   }, [leaveHistory]);
 
+const normalizeDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const today = new Date();
+const todayNormalized = normalizeDate(today);  
+
+const todayLeaveData = empleaveHistory.filter((leave) => {
+  
+  const leaveStartDate = normalizeDate(new Date(leave.startDate));  
+  const leaveEndDate = normalizeDate(new Date(leave.endDate || leave.startDate));  
+
+ 
+  return (
+    todayNormalized >= leaveStartDate && 
+    todayNormalized <= leaveEndDate &&
+    leave.status === 'Approved'   
+     
+  );
+});
+
 const totalLeaveDays = leaveHistory.reduce((total, leave) => {
   if (leave.leaveType?.toLowerCase() === 'leave'  && // Check if it's a "Leave"
   leave.status?.toLowerCase() === 'approved' 
@@ -302,12 +321,13 @@ const handleCancel = async (leaveId) => {
  
   
   return (
-    <div className="flex min-h-screen">
+    <div className="flex ">
       {/* Sidebar */}
       <Sidebar handleLogout={handleLogout} role={userData?.role} />
 
       {/* Main Content */}
-      <div className="md:ml-64 transition-all duration-300 md:p-14 w-full">
+      <div className="main-content flex-1 ml-0 md:ml-64 transition-all duration-300  md:p-14 w-full">
+      <div className="w-full max-w-fit lg:max-w-fit bg-white p-6 shadow-lg rounded-lg mx-auto">
         <h2 className="text-5xl text-center font-bold mb-4">Welcome  {userDataa.fullname} </h2>
         
 
@@ -366,12 +386,44 @@ const handleCancel = async (leaveId) => {
             </div>
           </div>          
         </div>
+
+        <div className="mt-8 bg-white shadow-lg rounded-lg p-6">
+          <h3 className="text-xl font-semibold mb-4">Today's Leave Data</h3>
+          {todayLeaveData.length > 0 ? (
+            <table>
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border border-gray-400 px-4 py-2">Employee Name</th>
+                  <th className="border border-gray-400 px-4 py-2">Leave Type</th>
+                  
+                  <th className="border border-gray-400 px-4 py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {todayLeaveData.map((leave) => (
+                  <tr key={leave._id}>
+                    <td className="border border-gray-400 px-4 py-2">{leave.userId.fullname}</td>
+                    <td className="border border-gray-400 px-4 py-2">{leave.leaveType} - {leave.permissionType}</td>
+                    
+                    <td className="border border-gray-400 px-4 py-2">{leave.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No leave data for today.</p>
+          )}
+        </div>
+
         {userData?.role !== "Employee" && (  
-        <div className="w-full bg-white p-6 shadow-lg rounded-lg mt-6">
+          
+        <div className="w-full p-6 shadow-lg rounded-lg mx-auto mt-6">
           <h2 className="text-2xl font-bold text-left mb-4">Pending Leave Request
           </h2>
           {displayempLeaveHistory.length > 0 ? (
-          <table>
+          <>
+          <div className="hidden md:block mt-8 bg-white shadow-lg rounded-lg p-6">
+          <table className ="w-full">
             <thead>
               <tr className="bg-gray-200">
                 <th className="border border-gray-400 px-4 py-2">Employee ID</th>
@@ -415,23 +467,54 @@ const handleCancel = async (leaveId) => {
                   <td className="border border-gray-400 px-4 py-2">
                     <div className="flex space-x-4">
                     {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
-                      <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" onClick={() => handleApprove(leave._id)}>Approve</button>)}
+                      <button className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" onClick={() => handleApprove(leave._id)}>Approve</button>)}
                       {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
-                      <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onClick={() => handleReject(leave._id)}>Reject</button>)}
+                      <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleReject(leave._id)}>Reject</button>)}
                       {leave.status === 'Approved' && new Date(leave.endDate) && new Date(leave.startDate)>= new Date() && (
-                      <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={() => handleCancel(leave._id)}>Cancel</button>)}
+                      <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleCancel(leave._id)}>Cancel</button>)}
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
+          <div className="md:hidden space-y-4">
+          {displayempLeaveHistory.map((leave) => (
+            <div key={leave._id} className="bg-gray-100 rounded-lg p-4 shadow">
+              <p><strong>Employee ID:</strong> {leave.userId.employeeid}</p>
+              <p><strong>Employee Name:</strong> {leave.userId.fullname}</p>
+              <p><strong>Leave Type:</strong> {leave.leaveType}-{leave.permissionType}</p>
+              <p><strong>Reason:</strong> {leave.reason}</p>
+              <p><strong>Start Date:</strong> {new Date(leave.startDate).toLocaleDateString()}</p>
+              <p><strong>End Date:</strong> {leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Total Days:</strong> {leave.totalDays}</p>
+              <p><strong>Status:</strong> {leave.status}</p>
+              <div className="flex space-x-2 mt-2">
+                <button
+                  onClick={() => handleApprove(leave._id)}
+                  className="bg-green-500 text-white px-4 py-2 rounded"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => handleReject(leave._id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+          </>
           ) : (
             <p>No pending leave requests.</p>
           )}
           </div>
         )}
 
+        </div>
         </div>
       </div>
    
