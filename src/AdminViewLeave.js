@@ -233,7 +233,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
   return (
     <div className="flex">
       <Sidebar handleLogout={handleLogout} />
-      <div className="main-content flex-1 ml-0 md:ml-64 transition-all duration-300 md:p-6">
+      <div className="main-content flex-1 ml-0 md:ml-64 transition-all duration-300 md:p-6 max-w-xl md:max-w-full">
         <div className="w-full max-w-fit lg:max-w-fit bg-white p-6 shadow-lg rounded-lg mx-auto">
           <h2 className="text-2xl font-bold text-center mb-4">Employee Leave History</h2>
           <DateRangePicker
@@ -304,7 +304,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
               <tr className="bg-gray-200">
                 <th className="border border-gray-400 px-4 py-2">Employee ID</th>
                 <th className="border border-gray-400 px-4 py-2">Employee Name</th>
-               {/* <th className="border border-gray-400 px-4 py-2">Role</th>*/}
+                <th className="border border-gray-400 px-4 py-2">Role</th>
                 <th className="border border-gray-400 px-4 py-2">Leave Type</th>
                 <th className="border border-gray-400 px-4 py-2">Reason</th>
                 <th className="border border-gray-400 px-4 py-2">Start Date</th>
@@ -320,7 +320,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
                 <tr key={leave._id}>
                   <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeid}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.userId.fullname}</td>
-                 {/* <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeInfoId?.role || 'N/A'}</td>*/}
+                  <td className="border border-gray-400 px-4 py-2">{leave.userId.employeeInfoId?.role || 'N/A'}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.leaveType}-{leave.permissionType} </td>
                   <td className="border border-gray-400 px-4 py-2">{leave.reason}</td>
                   <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
@@ -362,6 +362,7 @@ const displayLeaveHistory = isFiltered ? filteredLeaveHistory : leaveHistory;
             <div key={leave._id} className="bg-gray-100 rounded-lg p-4 shadow">
             <p><strong>Employee ID:</strong> {leave.userId.employeeid}</p>
             <p><strong>Employee Name:</strong> {leave.userId.fullname}</p>
+            <p><strong>Role:</strong> {leave.userId.employeeInfoId?.role}</p>
             <p><strong>Leave Type:</strong> {leave.leaveType}</p>
             <p><strong>Reason:</strong> {leave.reason}</p>
             <p><strong>Start Date:</strong> {new Date(leave.startDate).toLocaleDateString()}</p>

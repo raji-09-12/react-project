@@ -58,19 +58,24 @@ const transporter = nodemailer.createTransport({
 // Function to send email
 const sendConfirmationEmail = async ( userFullName, userEmail, leaveData, employeeName, department, role, dashboardLink) => {
   const { leaveType, startDate, endDate, reason, leaveDuration, permissionType, halfDayOption } = leaveData;
-  let leaveDetails = `Leave Type: ${leaveType}\nStart Date: ${startDate}\nReason: ${reason}`;
+  let leaveDetails = `Leave Type: ${leaveType}`;
+  if(leaveDuration) {
+    leaveDetails+=` ${leaveDuration} ${halfDayOption} `
+  }  else if (permissionType) {
+    leaveDetails += `${permissionType}`;
+  }
+  leaveDetails += `\nReason: ${reason}\nStart Date: ${startDate}`;
+  if (endDate) {
+    leaveDetails += `\nEnd Date: ${endDate}`;
+  }
   
-  if (endDate) leaveDetails += `\nEnd Date: ${endDate}`;
-  if (leaveDuration) leaveDetails += `\nLeave Duration: ${leaveDuration}`;
-  if (permissionType) leaveDetails += `\nPermission Type: ${permissionType}`;
-  if (halfDayOption) leaveDetails += `\nHalf Day Option: ${halfDayOption}`;
   
 
   const mailOptions = {
     from: 'rajibalaeshwari@gmail.com',
     to: userEmail,
-    subject: 'Employee Leave Request',
-    text: `Dear ${userFullName},\n\nAn ${employeeName} has applied for ${leaveType}.\n\n` +
+    subject: `${leaveType} Request Submitted by ${employeeName} `,
+    text: `Dear ${userFullName},\n\n${employeeName} has applied for ${leaveType}. Details are as follows:\n\n` +
           `Employee Name: ${employeeName}\n` +
           `Department: ${department}\n` +
           `Role: ${role}\n\n` +
