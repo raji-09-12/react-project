@@ -3,6 +3,8 @@ import { UserContext } from './UserContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from './EmployeeSidebar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 function Dashboard() {
   const { userData } = useContext(UserContext);
@@ -286,34 +288,6 @@ const handleReject = async (id) => {
  
 };
 
-const handleCancel = async (leaveId) => {
-  const statusReason = window.prompt("Enter the Cancelled Reason!")
-  if (!statusReason) {
-      alert("Cancelled Reason is required!")
-      return;
-  }
-  const token = localStorage.getItem('token');
-  if (!token) {
-      setError("User not logged in.");
-      return;
-  }
-
-  try {
-      await axios.put(`${process.env.REACT_APP_API_URL}cancel-leave/${leaveId}`, {reason: statusReason}, {
-          headers: { Authorization: `Bearer ${token}` },
-      });
-
-      // Update the leave's status in the state
-      setempLeaveHistory(leaveHistory.map((leave) =>
-          leave._id === leaveId ? { ...leave, status: 'Cancelled', statusReason } : leave
-      ));
-
-      setError(''); // Clear any previous errors
-  } catch (error) {
-      console.error("Error cancelling leave:", error);
-      setError("Failed to cancel leave.");
-  }
-};
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -321,13 +295,13 @@ const handleCancel = async (leaveId) => {
  
   
   return (
-    <div className="flex ">
+    <div className="flex min-h-screen">
       {/* Sidebar */}
       <Sidebar handleLogout={handleLogout} role={userData?.role} />
 
       {/* Main Content */}
       <div className="main-content flex-1 ml-0 md:ml-64 transition-all duration-300  md:p-14 w-full">
-      <div className="w-full max-w-fit lg:max-w-fit bg-white p-6 shadow-lg rounded-lg mx-auto">
+      <div className="w-full max-w-fit lg:max-w-fit  p-6 shadow-lg rounded-lg mx-auto">
         <h2 className="text-5xl text-center font-bold mb-4">Welcome  {userDataa.fullname} </h2>
         
 
@@ -417,7 +391,7 @@ const handleCancel = async (leaveId) => {
 
         {userData?.role !== "Employee" && (  
           
-        <div className="w-full p-6 shadow-lg rounded-lg mx-auto mt-6">
+        <div className="w-full p-6 shadow-lg rounded-lg bg-white mx-auto mt-6">
           <h2 className="text-2xl font-bold text-left mb-4">Pending Leave Request
           </h2>
           {displayempLeaveHistory.length > 0 ? (
@@ -449,30 +423,20 @@ const handleCancel = async (leaveId) => {
                   <td className="border border-gray-400 px-4 py-2">{new Date(leave.startDate).toLocaleDateString()}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.endDate ? new Date(leave.endDate).toLocaleDateString() : 'N/A'}</td>
                   <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
+                  <td className="border border-gray-400 px-4 py-2">{leave.status}</td>                            
                   <td className="border border-gray-400 px-4 py-2">
-                  <span
-                    className={`px-2 py-1 rounded ${
-                        leave.status === 'Approved'
-                            ? 'bg-green-500 text-white'
-                            : leave.status === 'Rejected'
-                            ? 'bg-red-500 text-white'
-                            : leave.status === 'Cancelled'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-yellow-500 text-white'
-                    }`}
-                >
-                    {leave.status}
-                </span>
-                  </td>
-                  <td className="border border-gray-400 px-4 py-2">
-                    <div className="flex space-x-4">
-                    {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
-                      <button className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" onClick={() => handleApprove(leave._id)}>Approve</button>)}
-                      {leave.status !== 'Approved' && leave.status !== 'Rejected' && leave.status !== 'Cancelled' && (
-                      <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleReject(leave._id)}>Reject</button>)}
-                      {leave.status === 'Approved' && new Date(leave.endDate) && new Date(leave.startDate)>= new Date() && (
-                      <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleCancel(leave._id)}>Cancel</button>)}
-                    </div>
+                  <FontAwesomeIcon
+                    icon={faCheckCircle}
+                    className="text-green-500 cursor-pointer mr-1 hover:text-green-600"
+                    size="2x"
+                    onClick={() => handleApprove(leave._id)}                        
+                  />                                              
+                  <FontAwesomeIcon
+                    icon={faTimesCircle  }
+                    className="text-red-500 cursor-pointer mr-1 hover:text-red-600"
+                    size="2x"
+                    onClick={() => handleReject(leave._id)}
+                  />
                   </td>
                 </tr>
               ))}
@@ -491,18 +455,18 @@ const handleCancel = async (leaveId) => {
               <p><strong>Total Days:</strong> {leave.totalDays}</p>
               <p><strong>Status:</strong> {leave.status}</p>
               <div className="flex space-x-2 mt-2">
-                <button
-                  onClick={() => handleApprove(leave._id)}
-                  className="bg-green-500 text-white px-4 py-2 rounded"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleReject(leave._id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded"
-                >
-                  Reject
-                </button>
+              <FontAwesomeIcon
+                icon={faCheckCircle}
+                className="text-green-500 cursor-pointer mr-1 hover:text-green-600"
+                size="2x"
+                onClick={() => handleApprove(leave._id)}                        
+              />                                              
+              <FontAwesomeIcon
+                icon={faTimesCircle  }
+                className="text-red-500 cursor-pointer mr-1 hover:text-red-600"
+                size="2x"
+                onClick={() => handleReject(leave._id)}
+              />
               </div>
             </div>
           ))}

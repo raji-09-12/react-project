@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from './AdminSidebar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 function Dashboard() {
   const [leaveHistory, setLeaveHistory] = useState([]);
@@ -352,18 +354,19 @@ const todayLeaveData = leaveHistory.filter((leave) => {
                     <td className="border border-gray-400 px-4 py-2">{leave.totalDays}</td>
                     <td className="border border-gray-400 px-4 py-2">{leave.status}</td>
                     <td className="border border-gray-400 px-4 py-2">
-                      <button
-                        onClick={() => handleApprove(leave._id)}
-                        className="bg-green-500 text-white px-4 py-2 rounded mr-2"
-                      >
-                        Approve
-                      </button>
-                      <button
+                      <FontAwesomeIcon
+                        icon={faCheckCircle}
+                        className="text-green-500 cursor-pointer mr-1 hover:text-green-600"
+                        size="2x"
+                        onClick={() => handleApprove(leave._id)}                        
+                      />                                              
+                      <FontAwesomeIcon
+                        icon={faTimesCircle  }
+                        className="text-red-500 cursor-pointer mr-1 hover:text-red-600"
+                        size="2x"
                         onClick={() => handleReject(leave._id)}
-                        className="bg-red-500 text-white px-4 py-2 rounded"
-                      >
-                        Reject
-                      </button>
+                      />
+                       
                     </td>
                   </tr>
                 ))}
@@ -383,18 +386,18 @@ const todayLeaveData = leaveHistory.filter((leave) => {
                 <p><strong>Total Days:</strong> {leave.totalDays}</p>
                 <p><strong>Status:</strong> {leave.status}</p>
                 <div className="flex space-x-2 mt-2">
-                  <button
-                    onClick={() => handleApprove(leave._id)}
-                    className="bg-green-500 text-white px-4 py-2 rounded"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(leave._id)}
-                    className="bg-red-500 text-white px-4 py-2 rounded"
-                  >
-                    Reject
-                  </button>
+                <FontAwesomeIcon
+                  icon={faCheckCircle}
+                  className="text-green-500 cursor-pointer mr-1 hover:text-green-600"
+                  size="2x"
+                  onClick={() => handleApprove(leave._id)}                        
+                />                                              
+                <FontAwesomeIcon
+                  icon={faTimesCircle  }
+                  className="text-red-500 cursor-pointer mr-1 hover:text-red-600"
+                  size="2x"
+                  onClick={() => handleReject(leave._id)}
+                />
                 </div>
               </div>
             ))}
