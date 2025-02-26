@@ -92,12 +92,13 @@ const sendConfirmationEmail = async ( userFullName, userEmail, leaveData, employ
   }
 };
 
-const sendLeaveConfirmationEmail = async(userFullName, userEmail, Reason) => {
+const sendLeaveConfirmationEmail = async(userFullName, userEmail, Reason, leave) => {
+  const { leaveType, status } = leave;
   const mailOptions = {
     from: 'rajibalaeshawari@gmail.com',
     to: userEmail,
-    subject : 'Leave Application Reject',
-    text: `Dear${userFullName},\n\nYour leave application has been rejected.\n\nReason: ${Reason}\n\nRegards,\nHR Department`,
+    subject : `${leaveType} Application ${status}`,
+    text: `Dear${userFullName},\n\nYour ${leaveType} application has been ${status}.\n\nReason: ${Reason}\n\nRegards,\nHR Department`,
   };
   try{
     await transporter.sendMail(mailOptions);
@@ -938,6 +939,7 @@ app.put('/reject-leave/:id', async (req, res) => {
 app.put('/cancel-leave/:leaveId', async (req, res) => {
   const { leaveId } = req.params;
   const{ reason } = req.body;
+  
   try {
       const leave = await LeaveApplication.findByIdAndUpdate(
           leaveId,
@@ -947,7 +949,18 @@ app.put('/cancel-leave/:leaveId', async (req, res) => {
       if (!leave) {
           return res.status(404).json({ error: 'Leave not found' });
       }
-      res.json({ message: 'Leave cancelled successfully', leave });
+      const employee = await UserInfo.findOne(
+        {employeeid:leave.employeeid},
+        {email: 1, fullname: 1}
+      );
+      console.log("Employee Details:", employee);
+      if(employee && employee.email) {
+        console.log(`sending email: ${employee.email}`)
+        await sendLeaveConfirmationEmail(employee.fullname, employee.email, reason, leave)
+      }else {
+        console.warn(`Employee email not found. ${leave.employeeid}Email not sent.`);
+      }
+      res.json({ message: 'Leave cancelled successfully and email send', leave });
   } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
